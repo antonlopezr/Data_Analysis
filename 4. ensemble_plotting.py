@@ -92,6 +92,51 @@ def rbf3(x, y, z, x_new, y_new):
     z_new = rbf(x_new, y_new)
     return z_new
 
+def rbf4(x, y, z, x_new, y_new):
+    try:
+        """
+        Optimal values
+            x=-10:      500, 0.02
+            x=10:       500, 0.02
+            y=0:        500, 0.02
+            z=0:        500, 0.02
+        """
+        rbf = Rbf(x, y, z, epsilon=500, smooth=0.02, function='gaussian')
+    except:
+        return False
+    z_new = rbf(x_new, y_new)
+    return z_new
+
+def rbf5(x, y, z, x_new, y_new):
+    try:
+        """
+        Optimal values
+            x=-10:      500, 0.02
+            x=10:       500, 0.02
+            y=0:        500, 0.02
+            z=0:        500, 0.02
+        """
+        rbf = Rbf(x, y, z, epsilon=500, smooth=0.02, function='inverse')
+    except:
+        return False
+    z_new = rbf(x_new, y_new)
+    return z_new
+
+def rbf6(x, y, z, x_new, y_new):
+    try:
+        """
+        Optimal values
+            x=-10:      500, 0.02
+            x=10:       500, 0.02
+            y=0:        500, 0.02
+            z=0:        500, 0.02
+        """
+        rbf = Rbf(x, y, z, smooth=0.02, function='cubic')
+    except:
+        return False
+    z_new = rbf(x_new, y_new)
+    return z_new
+
 def poly2(x, y, z, x_new, y_new):
     A = np.array([x*0+1, x, y, x*y, x**2, y**2, x**2*y, y**2*x, y**2*x**2]).T
     B = z
@@ -267,13 +312,13 @@ Ensemble averaging plot setup
 
 fill = 0
 plane = 'y=0'
-versions = ['rbf', 'rbf2', 'rbf3', 'polynomial']
-version = versions[3]
+versions = ['rbf', 'rbf2', 'rbf3', 'rbf4', 'rbf5', 'rbf6', 'polynomial']
+version = versions[6]
 unified_color = True
 shrink = 0.69
 cbtit_y = -5
-surface = False
-save = True
+surface = True
+save = False
 
 if version is 'rbf':
     f = rbf
@@ -284,9 +329,18 @@ if version is 'rbf2':
 if version is 'rbf3':
     f = rbf3
     clean = True
+if version is 'rbf4':
+    f = rbf4
+    clean = False
+if version is 'rbf5':
+    f = rbf5
+    clean = False
+if version is 'rbf6':
+    f = rbf5
+    clean = False
 if version is 'polynomial':
     f = poly2
-    clean = True
+    clean = False
 
 if plane is 'z=0':
     quirk = 'zzero'
@@ -388,11 +442,24 @@ else:
 # ----------------------------------------------------------------------------------------------------------------------
 
 if surface is True:
+    y_ticks = 4
+    z_ticks = 6
+    x_ticks = 5 if plane == 'y=0' or plane == 'z=0' else 4
+    degree = 2
+    tsize = 25
+    axsize = 15
+    tick_size = 10
+    pad = 15
+    tit_y = 1.05
+    cbtit_size = 15
+    fillsphere = True
+    aspect = 1
     """
     u
     """
     comp = 'u'
     mosaic = u_mosaic
+    lighting = False
 
     x = np.linspace(-20, 20, 40)
     y = np.linspace(-15, 15, 30)
@@ -401,19 +468,28 @@ if surface is True:
                                                           plot_title=r'$\mathit{' + comp + '}$' + ' in {} plane'.format(
                                                               plane),
                                                           color_bar=True,
-                                                          cb_vmax=actualmax3 if not isinstance(actualmax3,
+                                                          cb_vmax=actualmax1 if not isinstance(actualmax1,
                                                                                                type(None)) else
                                                           find_real_extremes(mosaic)[0],
-                                                          cb_vmin=actualmin3 if not isinstance(actualmin3,
+                                                          cb_vmin=actualmin1 if not isinstance(actualmin1,
                                                                                                type(None)) else
                                                           find_real_extremes(mosaic)[1],
                                                           cb_axis_labelpad=10,
                                                           title_size=tsize,
                                                           title_y=tit_y,
-                                                          z_label='${}$'.format(comp) + ' ' + '$[m/s]$',
-                                                          cb_top_title_x=-1,
+                                                          xaxis_label_size=axsize,
+                                                          yaxis_label_size=axsize,
+                                                          zaxis_label_size=axsize+5,
+                                                          xaxis_bold=True,
+                                                          yaxis_bold=True,
+                                                          zaxis_bold=True,
+                                                          tick_label_size=tick_size,
                                                           x_tick_number=x_ticks,
                                                           y_tick_number=y_ticks,
+                                                          z_tick_number=z_ticks,
+                                                          zaxis_labelpad=20,
+                                                          z_label='${}$'.format(comp) + ' ' + '$[m/s]$',
+                                                          cb_top_title_x=-1,
                                                           more_subplots_left=True,
                                                           shrink=shrink,
                                                           cb_top_title=True,
@@ -422,7 +498,8 @@ if surface is True:
                                                           cb_title_weight='bold',
                                                           cb_top_title_y=1.1,
                                                           cb_title_size=cbtit_size,
-                                                          cb_nticks=5
+                                                          cb_nticks=5,
+                                                          lighting=lighting
                                                           )
 
     """
@@ -438,19 +515,28 @@ if surface is True:
                                                           plot_title=r'$\mathit{' + comp + '}$' + ' in {} plane'.format(
                                                               plane),
                                                           color_bar=True,
-                                                          cb_vmax=actualmax3 if not isinstance(actualmax3,
+                                                          cb_vmax=actualmax2 if not isinstance(actualmax2,
                                                                                                type(None)) else
                                                           find_real_extremes(mosaic)[0],
-                                                          cb_vmin=actualmin3 if not isinstance(actualmin3,
+                                                          cb_vmin=actualmin2 if not isinstance(actualmin2,
                                                                                                type(None)) else
                                                           find_real_extremes(mosaic)[1],
                                                           cb_axis_labelpad=10,
                                                           title_size=tsize,
                                                           title_y=tit_y,
-                                                          z_label='${}$'.format(comp) + ' ' + '$[m/s]$',
-                                                          cb_top_title_x=-1,
+                                                          xaxis_label_size=axsize,
+                                                          yaxis_label_size=axsize,
+                                                          zaxis_label_size=axsize+5,
+                                                          xaxis_bold=True,
+                                                          yaxis_bold=True,
+                                                          zaxis_bold=True,
+                                                          tick_label_size=tick_size,
                                                           x_tick_number=x_ticks,
                                                           y_tick_number=y_ticks,
+                                                          z_tick_number=z_ticks,
+                                                          zaxis_labelpad=20,
+                                                          z_label='${}$'.format(comp) + ' ' + '$[m/s]$',
+                                                          cb_top_title_x=-1,
                                                           more_subplots_left=True,
                                                           shrink=shrink,
                                                           cb_top_title=True,
@@ -459,7 +545,8 @@ if surface is True:
                                                           cb_title_weight='bold',
                                                           cb_top_title_y=1.1,
                                                           cb_title_size=cbtit_size,
-                                                          cb_nticks=5
+                                                          cb_nticks=5,
+                                                          lighting=lighting
                                                           )
 
     """
@@ -484,10 +571,19 @@ if surface is True:
                                                           cb_axis_labelpad=10,
                                                           title_size=tsize,
                                                           title_y=tit_y,
-                                                          z_label='${}$'.format(comp) + ' ' + '$[m/s]$',
-                                                          cb_top_title_x=-1,
+                                                          xaxis_label_size=axsize,
+                                                          yaxis_label_size=axsize,
+                                                          zaxis_label_size=axsize+5,
+                                                          xaxis_bold=True,
+                                                          yaxis_bold=True,
+                                                          zaxis_bold=True,
+                                                          tick_label_size=tick_size,
                                                           x_tick_number=x_ticks,
                                                           y_tick_number=y_ticks,
+                                                          z_tick_number=z_ticks,
+                                                          zaxis_labelpad=20,
+                                                          z_label='${}$'.format(comp) + ' ' + '$[m/s]$',
+                                                          cb_top_title_x=-1,
                                                           more_subplots_left=True,
                                                           shrink=shrink,
                                                           cb_top_title=True,
@@ -496,7 +592,8 @@ if surface is True:
                                                           cb_title_weight='bold',
                                                           cb_top_title_y=1.1,
                                                           cb_title_size=cbtit_size,
-                                                          cb_nticks=5
+                                                          cb_nticks=5,
+                                                          lighting=lighting
                                                           )
 
     if save is True:

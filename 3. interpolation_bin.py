@@ -9,8 +9,8 @@ from scipy import interpolate
 from scipy.interpolate import Rbf
 import os.path
 
-from mpl_plotting_methods import MatPlotLibPublicationPlotter as mplPlotter
-from colormaps import ColorMaps
+from mpl_plotter_mpl_plotting_methods import MatPlotLibPublicationPlotter as mplPlotter
+from mpl_plotter_colormaps import ColorMaps
 
 """
 Uncertainty of mean estimates

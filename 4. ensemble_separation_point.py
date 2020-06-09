@@ -255,7 +255,7 @@ except:
 """
 
 def separation_point(method, field_u, field_w, save=False):
-    radius = 80
+    radius = 75
     theta = np.linspace(0,120,120)
     theta = theta*2*np.pi/360
     x = 200 - radius * np.cos(theta)

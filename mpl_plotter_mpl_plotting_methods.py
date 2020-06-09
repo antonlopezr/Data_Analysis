@@ -819,8 +819,12 @@ class MatPlotLibPublicationPlotter:
         graph = self.axes3d.plot_surface(x, y, z, cmap=cmap,
                                          edgecolors=edge_color, alpha=alpha,
                                          rstride=rstride, cstride=cstride, linewidth=linewidth,
-                                         norm=norm, facecolors=self.lighting(z, cmap) if lighting is True else None,
-                                         antialiased=antialiased, shade=shade)
+                                         norm=norm,
+                                         facecolors=self.lighting(z, cmap) if lighting is True else None,
+                                         antialiased=antialiased,
+                                         shade=shade,
+                                         vmax=cb_vmax, vmin=cb_vmin,
+                                         )
 
         # Edges to RGBA
         if edges_to_RGBA is True:
