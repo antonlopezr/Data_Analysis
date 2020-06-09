@@ -222,7 +222,7 @@ unified_color = True
 shrink = 0.69
 cbtit_y = -5
 surface = False
-save = False
+save = True
 
 if version == 'rbf':
     f = rbf2d
@@ -333,7 +333,13 @@ sub_field_path = os.path.join(data_path, 'subtracted_fields')
 def subtraction(plane, comp, ensemble_method, comparison_field):
 
     ens_field = np.loadtxt(os.path.join(plane_path, '{}_{}.txt'.format(comp, ensemble_method)))
-    comp_field = np.loadtxt(os.path.join(os.path.join(os.path.join(comp_field_path, comparison_field), plane), '{}_{}.txt'.format(comparison_field, comp)))
+    try:
+        comp_field = np.loadtxt(os.path.join(os.path.join(os.path.join(comp_field_path, comparison_field), plane), '{}_{}.txt'.format(comparison_field, comp)))
+    except:
+        if plane is 'y=0' or 'z=0':
+            comp_field = np.zeros((30, 40))
+        else:
+            comp_field = np.zeros((30, 30))
 
     subtracted_field = ens_field - comp_field
 
@@ -341,7 +347,7 @@ def subtraction(plane, comp, ensemble_method, comparison_field):
     np.savetxt(os.path.join(sub_field_path, '{}.txt'.format(dif_field)), subtracted_field)
 
 
-subtraction(plane=plane, comp=comp, ensemble_method=ensemble_method, comparison_field=comp_field)
+# subtraction(plane=plane, comp=comp, ensemble_method=ensemble_method, comparison_field=comp_field)
 
 """
 ------------------------------------------------------------------------------------------------------------------------
@@ -357,11 +363,11 @@ diff_field = w_mosaic
 diff_field = np.loadtxt(os.path.join(sub_field_path, '{}_{}_vs_{}.txt'.format(comp, ensemble_method, comp_field)))
 
 # Fields in plot
-ens_field = 'RBF'
-comp_field = 'Potential Flow'
+ens_field_title = 'RBF'
+comp_field_title = 'Potential Flow'
 
 # Figure setup
-fig = mplPlotter(light=True).setup2d(figsize=(8, 8))
+fig = mplPlotter(light=True).setup2d(figsize=(20, 6))
 
 y_ticks = 4
 x_ticks = 5 if plane == 'y=0' or plane == 'z=0' else 4
@@ -443,7 +449,7 @@ ax1 = mplPlotter(fig=fig, shape_and_position=111).heatmap(array=mosaic, resize_a
                                                                                                type(None)) else
                                                           find_real_extremes(mosaic)[1],
                                                           plot_title='Subtracted velocity fields: {} vs {} '.format(
-                                                                     ens_field, comp_field) + '\n' +
+                                                                     ens_field_title, comp_field_title) + '\n' +
                                                                      'Velocity component: ' + r'$\mathit{' + comp + '}$',
                                                           color_bar=True,
                                                           cb_axis_labelpad=10,
@@ -779,13 +785,13 @@ plt.show()
 #     subtraction(plane=plane, comp=comp, ensemble_method=ensemble_method, comparison_field=comp_field)
 #     u_mosaic = np.loadtxt(os.path.join(sub_field_path, '{}_{}_vs_{}.txt'.format(comp, ensemble_method, comp_field)))
 #
-# ax1 = mplPlotter(fig=fig, shape_and_position=131).heatmap(array=mosaic, resize_axes=True, aspect=aspect,
+# ax1 = mplPlotter(fig=fig, shape_and_position=131).heatmap(array=u_mosaic, resize_axes=True, aspect=aspect,
 #                                                           tick_ndecimals=1,
 #                                                           xresize_pad=0, yresize_pad=0,
 #                                                           x_bounds=x_bounds,
 #                                                           y_bounds=y_bounds,
-#                                                           cb_vmax=actualmax1 if not isinstance(actualmax1, type(None)) else find_real_extremes(mosaic)[0],
-#                                                           cb_vmin=actualmin1 if not isinstance(actualmin1, type(None)) else find_real_extremes(mosaic)[1],
+#                                                           cb_vmax=actualmax1 if not isinstance(actualmax1, type(None)) else find_real_extremes(u_mosaic)[0],
+#                                                           cb_vmin=actualmin1 if not isinstance(actualmin1, type(None)) else find_real_extremes(u_mosaic)[1],
 #                                                           plot_title=r'$\mathit{' + comp + '}$' + ' in {} plane'.format(plane),
 #                                                           color_bar=True,
 #                                                           cb_axis_labelpad=10,
@@ -825,15 +831,15 @@ plt.show()
 #     subtraction(plane=plane, comp=comp, ensemble_method=ensemble_method, comparison_field=comp_field)
 #     v_mosaic = np.loadtxt(os.path.join(sub_field_path, '{}_{}_vs_{}.txt'.format(comp, ensemble_method, comp_field)))
 #
-# ax2 = mplPlotter(fig=fig, shape_and_position=132).heatmap(array=mosaic, resize_axes=True, aspect=aspect,
+# ax2 = mplPlotter(fig=fig, shape_and_position=132).heatmap(array=v_mosaic, resize_axes=True, aspect=aspect,
 #                                                           tick_ndecimals=1,
 #                                                           xresize_pad=0, yresize_pad=0,
 #                                                           x_bounds=x_bounds,
 #                                                           y_bounds=y_bounds,
 #                                                           plot_title=r'$\mathit{' + comp + '}$' + ' in {} plane'.format(plane),
 #                                                           color_bar=True,
-#                                                           cb_vmax=actualmax2 if not isinstance(actualmax2, type(None)) else find_real_extremes(mosaic)[0],
-#                                                           cb_vmin=actualmin2 if not isinstance(actualmin2, type(None)) else find_real_extremes(mosaic)[1],
+#                                                           cb_vmax=actualmax2 if not isinstance(actualmax2, type(None)) else find_real_extremes(v_mosaic)[0],
+#                                                           cb_vmin=actualmin2 if not isinstance(actualmin2, type(None)) else find_real_extremes(v_mosaic)[1],
 #                                                           cb_axis_labelpad=10,
 #                                                           title_size=tsize,
 #                                                           custom_x_ticklabels=(-20, 20) if plane == 'y=0' or plane == 'z=0' else (-15, 15),
@@ -864,15 +870,15 @@ plt.show()
 #     subtraction(plane=plane, comp=comp, ensemble_method=ensemble_method, comparison_field=comp_field)
 #     w_mosaic = np.loadtxt(os.path.join(sub_field_path, '{}_{}_vs_{}.txt'.format(comp, ensemble_method, comp_field)))
 #
-# ax3 = mplPlotter(fig=fig, shape_and_position=133).heatmap(array=mosaic, resize_axes=True, aspect=aspect,
+# ax3 = mplPlotter(fig=fig, shape_and_position=133).heatmap(array=w_mosaic, resize_axes=True, aspect=aspect,
 #                                                           tick_ndecimals=1,
 #                                                           xresize_pad=0, yresize_pad=0,
 #                                                           x_bounds=x_bounds,
 #                                                           y_bounds=y_bounds,
 #                                                           plot_title=r'$\mathit{' + comp + '}$' + ' in {} plane'.format(plane),
 #                                                           color_bar=True,
-#                                                           cb_vmax=actualmax3 if not isinstance(actualmax3, type(None)) else find_real_extremes(mosaic)[0],
-#                                                           cb_vmin=actualmin3 if not isinstance(actualmin3, type(None)) else find_real_extremes(mosaic)[1],
+#                                                           cb_vmax=actualmax3 if not isinstance(actualmax3, type(None)) else find_real_extremes(w_mosaic)[0],
+#                                                           cb_vmin=actualmin3 if not isinstance(actualmin3, type(None)) else find_real_extremes(w_mosaic)[1],
 #                                                           cb_axis_labelpad=10,
 #                                                           title_size=tsize,
 #                                                           title_y=tit_y,
@@ -958,7 +964,7 @@ plt.show()
 # ax3.add_patch(sphere)
 #
 # if save is True:
-#     plt.savefig(os.path.join(img_path, '3D{}_Ensemble_Averaging_{}.png'.format(version, plane)),
+#     plt.savefig(os.path.join(img_path, 'Field_Subtraction_{}_vs_{}.png'.format(version, comp_field)),
 #                 dpi=150)
 #
 # """
@@ -983,7 +989,7 @@ plt.show()
 #                      ['v: ', v_mosaic.std()],
 #                      ['w: ', w_mosaic.std()]]
 #                     )
-#     np.savetxt(os.path.join(os.path.join(data_analysis, r'data\num_error_metrics\field_subtraction'), ensemble_method + '_vs_' + comp_field), data, fmt='%s')
+#     np.savetxt(os.path.join(os.path.join(data_analysis, r'data\num_error_metrics\field_subtraction'), ensemble_method + '_vs_' + comp_field + '.txt'), data, fmt='%s')
 #
 #
 # max_min_avg_std()
