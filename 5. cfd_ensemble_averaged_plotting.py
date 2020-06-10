@@ -26,6 +26,7 @@ ensemble_method = 'rbf'
 comp_field = 'cfd'
 
 if plane is 'x=10' or 'x=-10':
+    figsize = (20, 5)
     fill = 0
     shrink = 0.9
     cbtit_y = -5
@@ -114,7 +115,7 @@ else:
     actualmin3 = None
 
 # Figure setup
-fig = mplPlotter(light=True).setup2d(figsize=(20, 5))
+fig = mplPlotter(light=True).setup2d(figsize=figsize)
 
 if plane == 'z=0' or plane == 'y=0':
     x_bounds = [0, 40]
