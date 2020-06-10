@@ -213,11 +213,9 @@ plane = 'y=0'
 fill = 0
 versions = ['rbf', 'polynomial']
 version = versions[0]
-unified_color = True
 shrink = 0.69
 cbtit_y = -5
-surface = False
-save = False
+save = True
 
 if version == 'rbf':
     f = rbf2d
@@ -253,7 +251,7 @@ except:
 1. Separation point
 ------------------------------------------------------------------------------------------------------------------------
 """
-
+print(save)
 def separation_point(method, field_u, field_w, save=False):
     radius = 75
     theta = np.linspace(0,120,120)
@@ -284,14 +282,13 @@ def separation_point(method, field_u, field_w, save=False):
         u_tab.append(val_u)
         w_tab.append(val_w)
 
-    max_idx_dif = max(range(len(dif_utab)), key=dif_utab.__getitem__)
-
-    theta_sep = theta[max_idx_dif]
+    max_dif = np.array([abs(b - a) for a, b in zip(dif_utab[:-1], dif_utab[1:])])
+    theta_sep = theta[np.argmax(max_dif)]
 
     # Plot
     legendloc = (0.75, 0.55)
     line_thickness = 1
-    real_theta_sep = theta_sep #  + 0.255
+    real_theta_sep = theta_sep
     titlesize = 20
     axis_lbsize = 25
     tick_lbsize = 15
@@ -334,11 +331,13 @@ def separation_point(method, field_u, field_w, save=False):
     ax1.axvline(x=real_theta_sep, ymin=-5, ymax=15, c='green', linewidth=line_thickness, label=r'$\mathit{\theta_{sep}}$' + r'$ = {}^\circ$'.format(np.round(real_theta_sep/np.pi*180, 2)))
     ax1.legend(loc=legendloc, fontsize=21)
     plt.tight_layout()
+
     if save is True:
         plt.savefig(os.path.join(img_path, 'sep_point_velocity.png'), dpi=150)
+
     plt.show()
 
     return theta_sep, u_tab, w_tab, theta
 
 
-theta_sep, u_tab, w_tab, theta = separation_point(method='rbf', field_u=u_mosaic, field_w=w_mosaic, save=False)
+theta_sep, u_tab, w_tab, theta = separation_point(method='rbf', field_u=u_mosaic, field_w=w_mosaic, save=save)

@@ -25,6 +25,8 @@ bin_path = os.path.join(data_path, 'bins')
 uncertainty_path = os.path.join(data_path, 'uncertainty_mean_estimate')
 ens_avg_path = os.path.join(data_path, 'velocity_ensemble_averaged')
 
+comp_field_path = os.path.join(data_path, 'comparison_fields')
+
 def remove_nan():
     un = pd.read_excel(
         os.path.join(uncertainty_path, 'ErrorEst.xlsx'),
@@ -212,27 +214,47 @@ plane = 'y=0'
 
 ensemble_method = 'rbf'
 
-comp_field = 'CFD'
+comp_field = 'potential'
 
-fill = 0
-unified_color = True
-shrink = 0.69
-cbtit_y = -5
-surface = False
-save = True
 
-y_ticks = 4
-x_ticks = 5 if plane == 'y=0' or plane == 'z=0' else 4
-degree = 2
-tsize= 22
-axsize = 25
-pad = 15
-tit_y = 1.05
-cbtit_size = 18
-cb_tcksz = 15
-tick_size = 15
-fillsphere = True
-aspect = 1
+if plane == 'x=10' or plane == 'x=-10':
+    figsize = (20, 5)
+    fill = 0
+    shrink = 0.9
+    cbtit_y = -5
+    save = True
+
+    y_ticks = 4
+    x_ticks = 5 if plane == 'y=0' or plane == 'z=0' else 4
+    degree = 2
+    tsize = 22
+    axsize = 25
+    pad = 9
+    tit_y = 1.05
+    cbtit_size = 18
+    fillsphere = True
+    aspect = 1
+    cb_tcksz = 15
+    tick_size = 15
+else:
+    figsize = (20, 5)
+    fill = 0
+    shrink = 0.69
+    cbtit_y = -5
+    save = True
+
+    y_ticks = 4
+    x_ticks = 5 if plane == 'y=0' or plane == 'z=0' else 4
+    degree = 2
+    tsize = 22
+    axsize = 25
+    pad = 15
+    tit_y = 1.05
+    cbtit_size = 18
+    cb_tcksz = 15
+    tick_size = 15
+    fillsphere = True
+    aspect = 1
 
 if ensemble_method == 'rbf':
     f = rbf2d
@@ -291,7 +313,7 @@ def max_min_avg_std():
                      ['v: ', v_mosaic.std()],
                      ['w: ', w_mosaic.std()]]
                     )
-    np.savetxt(os.path.join(os.path.join(data_analysis, r'data\num_error_metrics\field_subtraction'), ensemble_method + '_vs_' + comp_field + '.txt'), data, fmt='%s')
+    np.savetxt(os.path.join(os.path.join(data_analysis, r'data\num_error_metrics\field_subtraction'), plane + ensemble_method + '_vs_' + comp_field + '.txt'), data, fmt='%s')
 
 
 max_min_avg_std()
@@ -316,13 +338,15 @@ sub_field_path = os.path.join(data_path, 'subtracted_fields')
 def subtraction(plane, comp, ensemble_method, comparison_field):
 
     for component in comp:
-
         ens_field = np.loadtxt(os.path.join(plane_path, '{}_{}.txt'.format(component, ensemble_method)))
+
+        specific_comp_field_path = os.path.join(os.path.join(comp_field_path, comparison_field), plane)
+        filename = '{}_{}.txt'.format(comparison_field, component) if comparison_field == 'potential' else '{}_{}.txt'.format(component, comparison_field)
+
         try:
-            comp_field = np.loadtxt(os.path.join(os.path.join(os.path.join(comp_field_path, comparison_field), plane),
-                                                 '{}_{}.txt'.format(comparison_field, component)))
+            comp_field = np.loadtxt(os.path.join(specific_comp_field_path, filename))
         except:
-            if plane is 'y=0' or 'z=0':
+            if plane == 'y=0' or plane == 'z=0':
                 comp_field = np.zeros((30, 40))
             else:
                 comp_field = np.zeros((30, 30))
@@ -360,9 +384,6 @@ else:
     y_bounds = [0, 30]
     if ensemble_method == 'polynomial' and plane == 'x=-10':
         values = False
-
-if unified_color is True:
-    values = True
 
 # Field subtraction
 values = False
@@ -617,7 +638,9 @@ sphere = Circle(sphere_loc, 7.5, facecolor='white', edgecolor='w', lw=2, fill=fi
 ax3.add_patch(sphere)
 
 if save is True:
-    plt.savefig(os.path.join(img_path, 'Field_Subtraction_{}_vs_{}.png'.format(ensemble_method, comp_field)),
+    plt.savefig(os.path.join(img_path, '{}_Field_Subtraction_{}_vs_{}.png'.format(plane, ensemble_method, comp_field)),
                 dpi=150)
+
+print(save)
 
 plt.show()

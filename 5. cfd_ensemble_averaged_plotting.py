@@ -10,7 +10,7 @@ from matplotlib.patches import Rectangle
 
 from mpl_plotter_mpl_plotting_methods import MatPlotLibPublicationPlotter as mplPlotter
 
-plane = 'z=0'
+plane = 'y=0'
 
 data_analysis = os.path.dirname(__file__)
 data_path = os.path.join(data_analysis, 'data')
@@ -25,7 +25,7 @@ cfd_field_path = os.path.join(os.path.join(comp_field_path, 'CFD'), plane)
 ensemble_method = 'rbf'
 comp_field = 'cfd'
 
-if plane is 'x=10' or 'x=-10':
+if plane is 'x=10' or plane is 'x=-10':
     figsize = (20, 5)
     fill = 0
     shrink = 0.9
@@ -45,6 +45,7 @@ if plane is 'x=10' or 'x=-10':
     cb_tcksz = 15
     tick_size = 15
 else:
+    figsize = (20, 5)
     fill = 0
     unified_color = True
     shrink = 0.69
@@ -173,7 +174,6 @@ def find_real_extremes(mosaic):
     min = df.min().min()
     max = df.max().max()
     return max, min
-
 
 """
 u
