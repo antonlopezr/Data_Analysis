@@ -291,7 +291,7 @@ def separation_point(method, field_u, field_w, save=False):
     # Plot
     legendloc = (0.75, 0.55)
     line_thickness = 1
-    real_theta_sep = theta_sep + 0.255
+    real_theta_sep = theta_sep #  + 0.255
     titlesize = 20
     axis_lbsize = 25
     tick_lbsize = 15
