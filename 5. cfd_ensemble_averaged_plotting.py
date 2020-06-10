@@ -1,6 +1,6 @@
 import numpy as np
+import pandas as pd
 import re
-
 import os.path
 
 import matplotlib.pyplot as plt
@@ -18,6 +18,7 @@ uncertainty_path = os.path.join(data_path, 'uncertainty_mean_estimate')
 ens_avg_path = os.path.join(data_path, 'velocity_ensemble_averaged')
 
 plane = 'y=0'
+cfd_field_path = os.path.join(ens_avg_path, plane)
 
 plane_path = os.path.join(ens_avg_path, plane)
 comp_field_path = os.path.join(data_path, 'comparison_fields')
@@ -27,11 +28,9 @@ ensemble_method = 'rbf'
 comp_field = 'cfd'
 
 fill = 0
-unified_color = True
 shrink = 0.69
 cbtit_y = -5
-surface = False
-save = True
+save = False
 
 y_ticks = 4
 x_ticks = 5 if plane == 'y=0' or plane == 'z=0' else 4
@@ -51,9 +50,6 @@ if plane == 'z=0' or plane == 'y=0':
 else:
     x_bounds = [0, 30]
     y_bounds = [0, 30]
-
-if unified_color is True:
-    values = True
 
 # Field subtraction
 values = False
@@ -96,7 +92,7 @@ else:
     actualmax3 = None
     actualmin3 = None
 
-cfd_field_path = os.path.join(os.path.join(comp_field_path, 'CFD'), plane)
+
 
 # Figure setup
 fig = mplPlotter(light=True).setup2d(figsize=(8, 8))
@@ -115,16 +111,10 @@ aspect = 1
 if plane == 'z=0' or plane == 'y=0':
     x_bounds = [0, 40]
     y_bounds = [0, 30]
-    if version == 'polynomial':
-        values = True
+
 else:
     x_bounds = [0, 30]
     y_bounds = [0, 30]
-    if version == 'polynomial' and plane == 'x=-10':
-        values = False
-
-if unified_color is True:
-    values = True
 
 # CFD field
 values = False
@@ -167,12 +157,21 @@ else:
     actualmax3 = None
     actualmin3 = None
 
+
+def find_real_extremes(mosaic):
+    df = pd.DataFrame(mosaic)
+    df = df.loc[:, (df != 0).any(axis=0)]
+    min = df.min().min()
+    max = df.max().max()
+    return max, min
+
+
 """
 u
 """
 comp = 'u'
 
-u_mosaic = np.loadtxt(os.path.join(cfd_field_path, '{}_{}.txt'.format(comp_field, comp)))
+u_mosaic = np.loadtxt(os.path.join(cfd_field_path, '{}_{}.txt'.format(comp, 'CFD')))
 
 ax1 = mplPlotter(fig=fig, shape_and_position=131).heatmap(array=u_mosaic, resize_axes=True, aspect=aspect,
                                                           tick_ndecimals=1,
@@ -215,7 +214,7 @@ v
 comp = 'v'
 
 try:
-    v_mosaic = np.loadtxt(os.path.join(cfd_field_path, '{}_{}.txt'.format(comp_field, comp)))
+    v_mosaic = np.loadtxt(os.path.join(cfd_field_path, '{}_{}.txt'.format(comp, 'CFD')))
 except:
     if plane is 'y=0' or 'z=0':
         v_mosaic = np.zeros((40, 30))
@@ -256,7 +255,7 @@ w
 comp = 'w'
 
 try:
-    w_mosaic = np.loadtxt(os.path.join(cfd_field_path, '{}_{}.txt'.format(comp_field, comp)))
+    w_mosaic = np.loadtxt(os.path.join(cfd_field_path, '{}_{}.txt'.format(comp, 'CFD')))
 except:
     if plane is 'y=0' or 'z=0':
         w_mosaic = np.zeros((40, 30))
@@ -357,5 +356,8 @@ sphere = Circle(sphere_loc, 7.5, facecolor='white', edgecolor='w', lw=2, fill=fi
 ax3.add_patch(sphere)
 
 if save is True:
-    plt.savefig(os.path.join(img_path, '3D{}_Ensemble_Averaging_{}.png'.format(version, plane)),
+    plt.savefig(os.path.join(img_path, 'CFD_Ensemble_Averaging_{}.png'.format(plane)),
                 dpi=150)
+
+
+plt.show()
