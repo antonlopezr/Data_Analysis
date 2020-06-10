@@ -1,19 +1,9 @@
 import pandas as pd
 import numpy as np
 import re
-import sys
 
-from os import listdir
-from scipy import interpolate
 from scipy.interpolate import Rbf
 import os.path
-
-import matplotlib.pyplot as plt
-
-from matplotlib.patches import Circle
-from matplotlib.patches import Rectangle
-
-from mpl_plotter_mpl_plotting_methods import MatPlotLibPublicationPlotter as mplPlotter
 
 """
 Uncertainty of mean estimates
@@ -21,24 +11,9 @@ Uncertainty of mean estimates
 data_analysis = os.path.dirname(__file__)
 data_path = os.path.join(data_analysis, 'data')
 img_path = os.path.join(data_analysis, 'images')
-bin_path = os.path.join(data_path, 'bins')
+bin_path = os.path.join(data_path, 'bins_cfd')
 uncertainty_path = os.path.join(data_path, 'uncertainty_mean_estimate')
 ens_avg_path = os.path.join(data_path, 'velocity_ensemble_averaged')
-
-def remove_nan():
-    un = pd.read_excel(
-        os.path.join(uncertainty_path, 'ErrorEst.xlsx'),
-        index_col=0)
-    un.columns = ['u', 'v', 'w']
-    un = un[un['u'] != ' nan']
-    un.to_csv(
-        os.path.join(uncertainty_path, 'ErrorEst.csv'))
-
-# remove_nan()
-
-un = pd.read_csv(
-    os.path.join(uncertainty_path, 'ErrorEst.csv'),
-    index_col=0)
 
 """
 RBF interpolation
@@ -69,7 +44,9 @@ def poly2(x, y, z, x_new, y_new):
     return z_new
 
 """
- """
+Ensemble Interpolation
+"""
+
 def interpolate_all(fill, plane, version, quirk, filenamestart, var, f):
     if quirk == 'xten' or quirk == 'xminusten':
         array_shape = (30, 30)
@@ -84,18 +61,19 @@ def interpolate_all(fill, plane, version, quirk, filenamestart, var, f):
     for k in range(-k_top, k_top+1):
         for l in range(-15, 16):
             if quirk == 'xten' or quirk == 'xminusten':
-                file = '{}{}_{}_{}.xlsx'.format(quirk, var, k, l)
+                file = '{}_{}_{}.csv'.format(var, k, l)
             if quirk == 'yzero':
-                file = '{}{}_{}_{}.xlsx'.format(quirk, k, var, l)
+                file = '{}_{}_{}.csv'.format(k, var, l)
             if quirk == 'zzero':
-                file = '{}{}_{}_{}.xlsx'.format(quirk, k, l, var)
+                file = '{}_{}_{}.csv'.format(k, l, var)
 
-            if os.path.isfile(os.path.join(bin_path, '{}_wo_outliers\{}'.format(
-                              plane, file))):
+            if os.path.isfile(os.path.join(bin_path, '{}\{}_projected\{}'.format(
+                              plane, plane, file))):
 
-                df = pd.read_excel(os.path.join(bin_path, '{}_wo_outliers\{}'.format(
-                                   plane, file)))
-                df.columns = ['x', 'y', 'z', 'u', 'v', 'w']
+                df = pd.read_csv(os.path.join(bin_path, '{}\{}_projected\{}'.format(
+                                   plane, plane, file)))
+                df.drop(df.columns.to_series()[:3], axis=1, inplace=True)
+                df.columns = ['u', 'v', 'w', 'x', 'x bin', 'y', 'y bin', 'z', 'z bin']
                 x = df['x']
                 y = df['y']
                 z = df['z']
@@ -134,49 +112,17 @@ def interpolate_all(fill, plane, version, quirk, filenamestart, var, f):
                 """
                 Average u
                 """
-                if un.loc[index][0] > 0.01:
-                    # Interpolation
-                    uu = f(x=x1, y=x2, z=u, x_new=x_new, y_new=y_new)
-
-                    if uu is False:
-                        print('{}: u interpolation not converged'.format(file))
-                        uu = fill
-                    else:
-                        uu = uu.item()
-
-                else:
-                    uu = fill
+                uu = f(x=x1, y=x2, z=u, x_new=x_new, y_new=y_new)
 
                 """
                 Average v
                 """
-                if un.loc[index][1] > 0.01:
-                    # Interpolation
-                    vv = f(x=x1, y=x2, z=v, x_new=x_new, y_new=y_new)
-
-                    if vv is False:
-                        print('{}: u interpolation not converged'.format(file))
-                        vv = fill
-                    else:
-                        vv = vv.item()
-
-                else:
-                    vv = fill
+                vv = f(x=x1, y=x2, z=v, x_new=x_new, y_new=y_new)
 
                 """
                 Average w
                 """
-                if un.loc[index][2] > 0.01:
-                    # Interpolation
-                    ww = f(x=x1, y=x2, z=w, x_new=x_new, y_new=y_new)
-
-                    if ww is False:
-                        print('{}: u interpolation not converged'.format(file))
-                        ww = fill
-                    else:
-                        ww = ww.item()
-                else:
-                    ww = fill
+                ww = f(x=x1, y=x2, z=w, x_new=x_new, y_new=y_new)
 
             else:
                 uu = fill
@@ -211,18 +157,15 @@ Ensemble averaging plot setup
 
 fill = 0
 plane = 'x=-10'
-versions = ['rbf', 'polynomial']
-version = versions[0]
+
+version = 'CFD'
 unified_color = True
 shrink = 0.69
 cbtit_y = -5
 surface = False
 save = False
 
-if version == 'rbf':
-    f = rbf2d
-if version == 'polynomial':
-    f = poly2
+f = rbf2d
 
 if plane == 'z=0':
     quirk = 'zzero'
@@ -235,12 +178,7 @@ if plane == 'x=-10':
 
 filenamestart = len(quirk)
 
-try:
-    u_mosaic = np.loadtxt(os.path.join(ens_avg_path, '{}\{}_{}.txt'.format(plane, 'u', version)))
-    v_mosaic = np.loadtxt(os.path.join(ens_avg_path, '{}\{}_{}.txt'.format(plane, 'v', version)))
-    w_mosaic = np.loadtxt(os.path.join(ens_avg_path, '{}\{}_{}.txt'.format(plane, 'w', version)))
-except:
-    u_mosaic, v_mosaic, w_mosaic = interpolate_all(fill=fill, plane=plane, version=version, quirk=quirk, filenamestart=filenamestart, var=re.findall(r'-?\d+', plane)[0], f=f)
+df = interpolate_all(fill=fill, plane=plane, version=version, quirk=quirk, filenamestart=filenamestart, var=re.findall(r'-?\d+', plane)[0], f=f)
 
 
 # ----------------------------------------------------------------------------------------------------------------------

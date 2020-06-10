@@ -11,100 +11,102 @@ def z_0():
 
     for x in chain(range(-20, 20)):
         for y in range(-15, 15):
-            if os.path.isfile(r'C:\Users\xXY4n\AE BSc\AE Year 2\Aerodynamics project\Data Analysis\data\velocity_binned_formatted\{}_{}_{}.csv'.format(x, y, z)):
-                copyfile(r'C:\Users\xXY4n\AE BSc\AE Year 2\Aerodynamics project\Data Analysis\data\velocity_binned_formatted\{}_{}_{}.csv'.format(x, y, z),
-                         r'C:\Users\xXY4n\AE BSc\AE Year 2\Aerodynamics project\Data Analysis\data\velocity_planes_of_interest\z=0\[0, 1)\{}_{}_{}.csv'.format(x, y, z))
+            if os.path.isfile(r'C:\Users\dsanc\Python\Python36\100bins\{}_{}_{}.csv'.format(x, y, z)):
+                copyfile(r'C:\Users\dsanc\Python\Python36\100bins\{}_{}_{}.csv'.format(x, y, z),
+                         r'C:\Users\dsanc\Documents\GitHub\Data_Analysis\data\bins_cfd\z=0\[0, 1)\{}_{}_{}.csv'.format(x, y, z))
 
-    for file in listdir(r'C:\Users\xXY4n\AE BSc\AE Year 2\Aerodynamics project\Data Analysis\data\velocity_planes_of_interest\z=0\[0, 1)'):
+    for file in listdir(r'C:\Users\dsanc\Documents\GitHub\Data_Analysis\data\bins_cfd\z=0\[0, 1)'):
 
-        df = pd.read_csv(r'C:\Users\xXY4n\AE BSc\AE Year 2\Aerodynamics project\Data Analysis\data\velocity_planes_of_interest\z=0\[0, 1)\{}'.format(file))
+        df = pd.read_csv(r'C:\Users\dsanc\Documents\GitHub\Data_Analysis\data\bins_cfd\z=0\[0, 1)\{}'.format(file), header=0)
+        mask = df['z'] < 0.010
+        df = df[mask].sort_values(['z'])
 
-        df = df[df['2'] < 1].sort_values(['2'])
+        df.to_csv(r'C:\Users\dsanc\Documents\GitHub\Data_Analysis\data\bins_cfd\z=0\[0, 0.25)\{}'.format(file))
 
-        df.to_csv(r'C:\Users\xXY4n\AE BSc\AE Year 2\Aerodynamics project\Data Analysis\data\velocity_planes_of_interest\z=0\[0, 0.1)\{}'.format(file))
+    for file in listdir(r'C:\Users\dsanc\Documents\GitHub\Data_Analysis\data\bins_cfd\z=0\[0, 0.25)'):
 
-    for file in listdir(r'C:\Users\xXY4n\AE BSc\AE Year 2\Aerodynamics project\Data Analysis\data\velocity_planes_of_interest\z=0\[0, 0.1)'):
+        df = pd.read_csv(r'C:\Users\dsanc\Documents\GitHub\Data_Analysis\data\bins_cfd\z=0\[0, 0.25)\{}'.format(file))
 
-        df = pd.read_csv(r'C:\Users\xXY4n\AE BSc\AE Year 2\Aerodynamics project\Data Analysis\data\velocity_planes_of_interest\z=0\[0, 0.1)\{}'.format(file))
+        df['z'] = 0
 
-        df['2'] = 0
-
-        df.to_csv(r'C:\Users\xXY4n\AE BSc\AE Year 2\Aerodynamics project\Data Analysis\data\velocity_planes_of_interest\z=0\z=0_projected\{}'.format(file))
+        df.to_csv(r'C:\Users\dsanc\Documents\GitHub\Data_Analysis\data\bins_cfd\z=0\z=0_projected\{}'.format(file))
 
 
 def y_0():
     y = 0
-
     for x in chain(range(-20, 20)):
-        for z in chain(range(-15, 15)):
-            if os.path.isfile(r'C:\Users\xXY4n\AE BSc\AE Year 2\Aerodynamics project\Data Analysis\data\velocity_binned_formatted\{}_{}_{}.csv'.format(x, y, z)):
-                copyfile(r'C:\Users\xXY4n\AE BSc\AE Year 2\Aerodynamics project\Data Analysis\data\velocity_binned_formatted\{}_{}_{}.csv'.format(x, y, z),
-                         r'C:\Users\xXY4n\AE BSc\AE Year 2\Aerodynamics project\Data Analysis\data\velocity_planes_of_interest\y=0\[0, 1)\{}_{}_{}.csv'.format(x, y, z))
+        for z in range(-15, 15):
+            if os.path.isfile(r'C:\Users\dsanc\Python\Python36\100bins\{}_{}_{}.csv'.format(x, y, z)):
+                copyfile(r'C:\Users\dsanc\Python\Python36\100bins\{}_{}_{}.csv'.format(x, y, z),
+                         r'C:\Users\dsanc\Documents\GitHub\Data_Analysis\data\bins_cfd\y=0\[0, 1)\{}_{}_{}.csv'.format(x, y, z))
 
-    for file in listdir(r'C:\Users\xXY4n\AE BSc\AE Year 2\Aerodynamics project\Data Analysis\data\velocity_planes_of_interest\y=0\[0, 1)'):
-        df = pd.read_csv(r'C:\Users\xXY4n\AE BSc\AE Year 2\Aerodynamics project\Data Analysis\data\velocity_planes_of_interest\y=0\[0, 1)\{}'.format(file))
+    for file in listdir(r'C:\Users\dsanc\Documents\GitHub\Data_Analysis\data\bins_cfd\y=0\[0, 1)'):
 
-        df = df[df['1'] < 1].sort_values(['1'])
+        df = pd.read_csv(r'C:\Users\dsanc\Documents\GitHub\Data_Analysis\data\bins_cfd\y=0\[0, 1)\{}'.format(file), header=0)
+        mask = df['y'] < 0.010
+        df = df[mask].sort_values(['y'])
 
-        df.to_csv(r'C:\Users\xXY4n\AE BSc\AE Year 2\Aerodynamics project\Data Analysis\data\velocity_planes_of_interest\y=0\[0, 0.1)\{}'.format(file))
+        df.to_csv(r'C:\Users\dsanc\Documents\GitHub\Data_Analysis\data\bins_cfd\y=0\[0, 0.25)\{}'.format(file))
 
-    for file in listdir(r'C:\Users\xXY4n\AE BSc\AE Year 2\Aerodynamics project\Data Analysis\data\velocity_planes_of_interest\y=0\[0, 0.1)'):
+    for file in listdir(r'C:\Users\dsanc\Documents\GitHub\Data_Analysis\data\bins_cfd\y=0\[0, 0.25)'):
 
-        df = pd.read_csv(r'C:\Users\xXY4n\AE BSc\AE Year 2\Aerodynamics project\Data Analysis\data\velocity_planes_of_interest\y=0\[0, 0.1)\{}'.format(file))
+        df = pd.read_csv(r'C:\Users\dsanc\Documents\GitHub\Data_Analysis\data\bins_cfd\y=0\[0, 0.25)\{}'.format(file))
 
-        df['1'] = 0
+        df['y'] = 0
 
-        df.to_csv(r'C:\Users\xXY4n\AE BSc\AE Year 2\Aerodynamics project\Data Analysis\data\velocity_planes_of_interest\y=0\y=0_projected\{}'.format(file))
+        df.to_csv(r'C:\Users\dsanc\Documents\GitHub\Data_Analysis\data\bins_cfd\y=0\y=0_projected\{}'.format(file))
 
 
 def x_m10():
     x = -10
+    for y in chain(range(-15, 15)):
+        for z in range(-15, 15):
+            if os.path.isfile(r'C:\Users\dsanc\Python\Python36\100bins\{}_{}_{}.csv'.format(x, y, z)):
+                copyfile(r'C:\Users\dsanc\Python\Python36\100bins\{}_{}_{}.csv'.format(x, y, z),
+                         r'C:\Users\dsanc\Documents\GitHub\Data_Analysis\data\bins_cfd\x=-10\[0, 1)\{}_{}_{}.csv'.format(
+                             x, y, z))
 
-    for y in range(-15, 15):
-        for z in chain(range(-15, 15)):
-            if os.path.isfile(r'C:\Users\xXY4n\AE BSc\AE Year 2\Aerodynamics project\Data Analysis\data\velocity_binned_formatted\{}_{}_{}.csv'.format(x, y, z)):
-                copyfile(r'C:\Users\xXY4n\AE BSc\AE Year 2\Aerodynamics project\Data Analysis\data\velocity_binned_formatted\{}_{}_{}.csv'.format(x, y, z),
-                         r'C:\Users\xXY4n\AE BSc\AE Year 2\Aerodynamics project\Data Analysis\data\velocity_planes_of_interest\x=-10\[-10, -9)\{}_{}_{}.csv'.format(x, y, z))
+    for file in listdir(r'C:\Users\dsanc\Documents\GitHub\Data_Analysis\data\bins_cfd\x=-10\[0, 1)'):
+        df = pd.read_csv(r'C:\Users\dsanc\Documents\GitHub\Data_Analysis\data\bins_cfd\x=-10\[0, 1)\{}'.format(file),
+                         header=0)
+        mask = df['x'] < -0.090
+        df = df[mask].sort_values(['x'])
 
-    for file in listdir(r'C:\Users\xXY4n\AE BSc\AE Year 2\Aerodynamics project\Data Analysis\data\velocity_planes_of_interest\x=-10\[-10, -9)'):
-        df = pd.read_csv(r'C:\Users\xXY4n\AE BSc\AE Year 2\Aerodynamics project\Data Analysis\data\velocity_planes_of_interest\x=-10\[-10, -9)\{}'.format(file))
+        df.to_csv(r'C:\Users\dsanc\Documents\GitHub\Data_Analysis\data\bins_cfd\x=-10\[0, 0.25)\{}'.format(file))
 
-        df = df[df['0'] < -99].sort_values(['0'])
+    for file in listdir(r'C:\Users\dsanc\Documents\GitHub\Data_Analysis\data\bins_cfd\x=-10\[0, 0.25)'):
+        df = pd.read_csv(r'C:\Users\dsanc\Documents\GitHub\Data_Analysis\data\bins_cfd\x=-10\[0, 0.25)\{}'.format(file))
 
-        df.to_csv(r'C:\Users\xXY4n\AE BSc\AE Year 2\Aerodynamics project\Data Analysis\data\velocity_planes_of_interest\x=-10\[-10, -9.9)\{}'.format(file))
+        df['x'] = 0
 
-    for file in listdir(r'C:\Users\xXY4n\AE BSc\AE Year 2\Aerodynamics project\Data Analysis\data\velocity_planes_of_interest\x=-10\[-10, -9.9)'):
-
-        df = pd.read_csv(r'C:\Users\xXY4n\AE BSc\AE Year 2\Aerodynamics project\Data Analysis\data\velocity_planes_of_interest\x=-10\[-10, -9.9)\{}'.format(file))
-
-        df['0'] = -100
-
-        df.to_csv(r'C:\Users\xXY4n\AE BSc\AE Year 2\Aerodynamics project\Data Analysis\data\velocity_planes_of_interest\x=-10\x=-10_projected\{}'.format(file))
+        df.to_csv(r'C:\Users\dsanc\Documents\GitHub\Data_Analysis\data\bins_cfd\x=-10\x=-10_projected\{}'.format(file))
 
 
 def x_10():
     x = 10
 
-    for y in range(-15, 15):
-        for z in chain(range(-15, 15)):
-            if os.path.isfile(r'C:\Users\xXY4n\AE BSc\AE Year 2\Aerodynamics project\Data Analysis\data\velocity_binned_formatted\{}_{}_{}.csv'.format(x, y, z)):
-                copyfile(r'C:\Users\xXY4n\AE BSc\AE Year 2\Aerodynamics project\Data Analysis\data\velocity_binned_formatted\{}_{}_{}.csv'.format(x, y, z),
-                         r'C:\Users\xXY4n\AE BSc\AE Year 2\Aerodynamics project\Data Analysis\data\velocity_planes_of_interest\x=10\[10, 11)\{}_{}_{}.csv'.format(x, y, z))
+    for z in chain(range(-15, 15)):
+        for y in range(-15, 15):
+            if os.path.isfile(r'C:\Users\dsanc\Python\Python36\100bins\{}_{}_{}.csv'.format(x, y, z)):
+                copyfile(r'C:\Users\dsanc\Python\Python36\100bins\{}_{}_{}.csv'.format(x, y, z),
+                         r'C:\Users\dsanc\Documents\GitHub\Data_Analysis\data\bins_cfd\x=10\[0, 1)\{}_{}_{}.csv'.format(
+                             x, y, z))
 
-    for file in listdir(r'C:\Users\xXY4n\AE BSc\AE Year 2\Aerodynamics project\Data Analysis\data\velocity_planes_of_interest\x=10\[10, 11)'):
-        df = pd.read_csv(r'C:\Users\xXY4n\AE BSc\AE Year 2\Aerodynamics project\Data Analysis\data\velocity_planes_of_interest\x=10\[10, 11)\{}'.format(file))
+    for file in listdir(r'C:\Users\dsanc\Documents\GitHub\Data_Analysis\data\bins_cfd\x=10\[0, 1)'):
+        df = pd.read_csv(r'C:\Users\dsanc\Documents\GitHub\Data_Analysis\data\bins_cfd\x=10\[0, 1)\{}'.format(file),
+                         header=0)
+        mask = df['x'] < 0.110
+        df = df[mask].sort_values(['x'])
 
-        df = df[df['0'] < 101].sort_values(['0'])
+        df.to_csv(r'C:\Users\dsanc\Documents\GitHub\Data_Analysis\data\bins_cfd\x=10\[0, 0.25)\{}'.format(file))
 
-        df.to_csv(r'C:\Users\xXY4n\AE BSc\AE Year 2\Aerodynamics project\Data Analysis\data\velocity_planes_of_interest\x=10\[10, 10.1)\{}'.format(file))
+    for file in listdir(r'C:\Users\dsanc\Documents\GitHub\Data_Analysis\data\bins_cfd\x=10\[0, 0.25)'):
+        df = pd.read_csv(r'C:\Users\dsanc\Documents\GitHub\Data_Analysis\data\bins_cfd\x=10\[0, 0.25)\{}'.format(file))
 
-    for file in listdir(r'C:\Users\xXY4n\AE BSc\AE Year 2\Aerodynamics project\Data Analysis\data\velocity_planes_of_interest\x=10\[10, 10.1)'):
+        df['x'] = 0
 
-        df = pd.read_csv(r'C:\Users\xXY4n\AE BSc\AE Year 2\Aerodynamics project\Data Analysis\data\velocity_planes_of_interest\x=10\[10, 10.1)\{}'.format(file))
+        df.to_csv(r'C:\Users\dsanc\Documents\GitHub\Data_Analysis\data\bins_cfd\x=10\x=10_projected\{}'.format(file))
 
-        df['0'] = 100
-
-        df.to_csv(r'C:\Users\xXY4n\AE BSc\AE Year 2\Aerodynamics project\Data Analysis\data\velocity_planes_of_interest\x=10\x=10_projected\{}'.format(file))
 
 z_0()
 y_0()
