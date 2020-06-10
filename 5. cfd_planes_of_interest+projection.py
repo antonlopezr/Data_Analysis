@@ -7,18 +7,45 @@ from os import listdir
 
 
 def z_0():
-    z = 0
+    df_o = None
+    df_i = None
 
     for x in chain(range(-20, 20)):
         for y in range(-15, 15):
+            files = []
+
+            z = 0
             if os.path.isfile(r'C:\Users\dsanc\Python\Python36\100bins\{}_{}_{}.csv'.format(x, y, z)):
-                copyfile(r'C:\Users\dsanc\Python\Python36\100bins\{}_{}_{}.csv'.format(x, y, z),
-                         r'C:\Users\dsanc\Documents\GitHub\Data_Analysis\data\bins_cfd\z=0\[0, 1)\{}_{}_{}.csv'.format(x, y, z))
+                df_o = pd.read_csv(r'C:\Users\dsanc\Python\Python36\100bins\{}_{}_{}.csv'.format(x, y, z), header=0)
+            z = -1
+            if os.path.isfile(r'C:\Users\dsanc\Python\Python36\100bins\{}_{}_{}.csv'.format(x, y, z)):
+                df_i = pd.read_csv(r'C:\Users\dsanc\Python\Python36\100bins\{}_{}_{}.csv'.format(x, y, z), header=0)
+
+            if not isinstance(df_o, type(None)):
+                files.append(df_o)
+            if not isinstance(df_i, type(None)):
+                files.append(df_i)
+
+            if not isinstance(df_o, type(None)) or not isinstance(df_i, type(None)):
+                df = pd.concat(files)
+            else:
+                df = None
+
+            if not isinstance(df, type(None)):
+                df.to_csv(
+                    r'C:\Users\dsanc\Documents\GitHub\Data_Analysis\data\bins_cfd\z=0\[0, 1)\{}_{}_{}.csv'.format(x, y,
+                                                                                                                  z))
+            df_o = None
+            df_i = None
+
 
     for file in listdir(r'C:\Users\dsanc\Documents\GitHub\Data_Analysis\data\bins_cfd\z=0\[0, 1)'):
 
         df = pd.read_csv(r'C:\Users\dsanc\Documents\GitHub\Data_Analysis\data\bins_cfd\z=0\[0, 1)\{}'.format(file), header=0)
-        mask = df['z'] < 0.010
+        mask = df['z'] < 0.005
+        df = df[mask].sort_values(['z'])
+
+        mask = df['z'] < -0.005
         df = df[mask].sort_values(['z'])
 
         df.to_csv(r'C:\Users\dsanc\Documents\GitHub\Data_Analysis\data\bins_cfd\z=0\[0, 0.25)\{}'.format(file))
@@ -33,12 +60,38 @@ def z_0():
 
 
 def y_0():
-    y = 0
+    df_o = None
+    df_i = None
+
     for x in chain(range(-20, 20)):
         for z in range(-15, 15):
+            files = []
+
+            y = 0
             if os.path.isfile(r'C:\Users\dsanc\Python\Python36\100bins\{}_{}_{}.csv'.format(x, y, z)):
-                copyfile(r'C:\Users\dsanc\Python\Python36\100bins\{}_{}_{}.csv'.format(x, y, z),
-                         r'C:\Users\dsanc\Documents\GitHub\Data_Analysis\data\bins_cfd\y=0\[0, 1)\{}_{}_{}.csv'.format(x, y, z))
+                df_o = pd.read_csv(r'C:\Users\dsanc\Python\Python36\100bins\{}_{}_{}.csv'.format(x, y, z), header=0)
+            y = -1
+            if os.path.isfile(r'C:\Users\dsanc\Python\Python36\100bins\{}_{}_{}.csv'.format(x, y, z)):
+                df_i = pd.read_csv(r'C:\Users\dsanc\Python\Python36\100bins\{}_{}_{}.csv'.format(x, y, z), header=0)
+
+            if not isinstance(df_o, type(None)):
+                files.append(df_o)
+            if not isinstance(df_i, type(None)):
+                files.append(df_i)
+
+            if not isinstance(df_o, type(None)) or not isinstance(df_i, type(None)):
+                df = pd.concat(files)
+            else:
+                df = None
+
+            if not isinstance(df, type(None)):
+                df.to_csv(
+                    r'C:\Users\dsanc\Documents\GitHub\Data_Analysis\data\bins_cfd\z=0\[0, 1)\{}_{}_{}.csv'.format(x, y,
+                                                                                                                  z))
+            print(len(files))
+            df_o = None
+            df_i = None
+
 
     for file in listdir(r'C:\Users\dsanc\Documents\GitHub\Data_Analysis\data\bins_cfd\y=0\[0, 1)'):
 

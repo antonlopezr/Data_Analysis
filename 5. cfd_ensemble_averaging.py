@@ -156,7 +156,7 @@ Ensemble averaging plot setup
 """
 
 fill = 0
-plane = 'x=-10'
+plane = 'y=0'
 
 version = 'CFD'
 unified_color = True

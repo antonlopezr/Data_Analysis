@@ -30,7 +30,7 @@ comp_field = 'cfd'
 fill = 0
 shrink = 0.69
 cbtit_y = -5
-save = False
+save = True
 
 y_ticks = 4
 x_ticks = 5 if plane == 'y=0' or plane == 'z=0' else 4
@@ -95,7 +95,7 @@ else:
 
 
 # Figure setup
-fig = mplPlotter(light=True).setup2d(figsize=(8, 8))
+fig = mplPlotter(light=True).setup2d(figsize=(20, 6))
 
 y_ticks = 4
 x_ticks = 5 if plane == 'y=0' or plane == 'z=0' else 4
