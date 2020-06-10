@@ -10,38 +10,59 @@ from matplotlib.patches import Rectangle
 
 from mpl_plotter_mpl_plotting_methods import MatPlotLibPublicationPlotter as mplPlotter
 
+plane = 'z=0'
+
 data_analysis = os.path.dirname(__file__)
 data_path = os.path.join(data_analysis, 'data')
 img_path = os.path.join(data_analysis, 'images')
 bin_path = os.path.join(data_path, 'bins')
 uncertainty_path = os.path.join(data_path, 'uncertainty_mean_estimate')
-ens_avg_path = os.path.join(data_path, 'velocity_ensemble_averaged')
 
-plane = 'y=0'
-cfd_field_path = os.path.join(ens_avg_path, plane)
-
-plane_path = os.path.join(ens_avg_path, plane)
 comp_field_path = os.path.join(data_path, 'comparison_fields')
-sub_field_path = os.path.join(data_path, 'subtracted_fields')
+
+cfd_field_path = os.path.join(os.path.join(comp_field_path, 'CFD'), plane)
 
 ensemble_method = 'rbf'
 comp_field = 'cfd'
 
-fill = 0
-shrink = 0.69
-cbtit_y = -5
-save = True
+if plane is 'x=10' or 'x=-10':
+    fill = 0
+    shrink = 0.9
+    cbtit_y = -5
+    save = True
 
-y_ticks = 4
-x_ticks = 5 if plane == 'y=0' or plane == 'z=0' else 4
-degree = 2
-tsize=25
-axsize = 25
-pad = 15
-tit_y = 1.05
-cbtit_size = 15
-fillsphere = True
-aspect = 1
+    y_ticks = 4
+    x_ticks = 5 if plane == 'y=0' or plane == 'z=0' else 4
+    degree = 2
+    tsize = 22
+    axsize = 25
+    pad = 9
+    tit_y = 1.05
+    cbtit_size = 18
+    fillsphere = True
+    aspect = 1
+    cb_tcksz = 15
+    tick_size = 15
+else:
+    fill = 0
+    unified_color = True
+    shrink = 0.69
+    cbtit_y = -5
+    surface = False
+    save = True
+
+    y_ticks = 4
+    x_ticks = 5 if plane == 'y=0' or plane == 'z=0' else 4
+    degree = 2
+    tsize = 22
+    axsize = 25
+    pad = 15
+    tit_y = 1.05
+    cbtit_size = 18
+    cb_tcksz = 15
+    tick_size = 15
+    fillsphere = True
+    aspect = 1
 
 if plane == 'z=0' or plane == 'y=0':
     x_bounds = [0, 40]
@@ -92,21 +113,8 @@ else:
     actualmax3 = None
     actualmin3 = None
 
-
-
 # Figure setup
-fig = mplPlotter(light=True).setup2d(figsize=(20, 6))
-
-y_ticks = 4
-x_ticks = 5 if plane == 'y=0' or plane == 'z=0' else 4
-degree = 2
-tsize=25
-axsize = 25
-pad = 15
-tit_y = 1.05
-cbtit_size = 15
-fillsphere = True
-aspect = 1
+fig = mplPlotter(light=True).setup2d(figsize=(20, 5))
 
 if plane == 'z=0' or plane == 'y=0':
     x_bounds = [0, 40]
@@ -193,7 +201,7 @@ ax1 = mplPlotter(fig=fig, shape_and_position=131).heatmap(array=u_mosaic, resize
                                                           yaxis_label_size=axsize,
                                                           xaxis_bold=True,
                                                           yaxis_bold=True,
-                                                          x_label='x $[cm]$', y_label='z $[cm]$',
+                                                          x_label='x $[cm]$', y_label='y $[cm]$',
                                                           cb_top_title=True,
                                                           cb_top_title_pad=cbtit_y,
                                                           cb_top_title_x=-1,
@@ -205,7 +213,9 @@ ax1 = mplPlotter(fig=fig, shape_and_position=131).heatmap(array=u_mosaic, resize
                                                           y_tick_number=y_ticks,
                                                           more_subplots_left=True,
                                                           shrink=shrink,
-                                                          cb_nticks=5
+                                                          cb_nticks=5,
+                                                          cb_ticklabelsize=cb_tcksz,
+                                                          tick_label_size=tick_size,
                                                           )
 
 """
@@ -246,7 +256,9 @@ ax2 = mplPlotter(fig=fig, shape_and_position=132).heatmap(array=v_mosaic, resize
                                                           cb_title_weight='bold',
                                                           cb_top_title_y=1.1,
                                                           cb_title_size=cbtit_size,
-                                                          cb_nticks=5
+                                                          cb_nticks=5,
+                                                          cb_ticklabelsize=cb_tcksz,
+                                                          tick_label_size=tick_size,
                                                           )
 
 """
@@ -287,7 +299,9 @@ ax3 = mplPlotter(fig=fig, shape_and_position=133).heatmap(array=w_mosaic, resize
                                                           cb_title_weight='bold',
                                                           cb_top_title_y=1.1,
                                                           cb_title_size=cbtit_size,
-                                                          cb_nticks=5
+                                                          cb_nticks=5,
+                                                          cb_ticklabelsize=cb_tcksz,
+                                                          tick_label_size=tick_size,
                                                           )
 
 """

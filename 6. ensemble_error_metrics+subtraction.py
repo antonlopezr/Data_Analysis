@@ -16,7 +16,7 @@ from matplotlib.patches import Rectangle
 from mpl_plotter_mpl_plotting_methods import MatPlotLibPublicationPlotter as mplPlotter
 
 """
-Uncertainty of mean estimates
+Paths
 """
 data_analysis = os.path.dirname(__file__)
 data_path = os.path.join(data_analysis, 'data')
@@ -70,7 +70,7 @@ def poly2(x, y, z, x_new, y_new):
 
 """
  """
-def interpolate_all(fill, plane, version, quirk, filenamestart, var, f):
+def interpolate_all(fill, plane, ensemble_method, quirk, filenamestart, var, f):
     if quirk == 'xten' or quirk == 'xminusten':
         array_shape = (30, 30)
         k_top = 15
@@ -194,7 +194,7 @@ def interpolate_all(fill, plane, version, quirk, filenamestart, var, f):
     names = ['u', 'v', 'w']
     msics = [u_mosaic, v_mosaic, w_mosaic]
     for comp in range(3):
-        np.savetxt(os.path.join(ens_avg_path, r'{}\{}_{}.txt'.format(plane, names[comp], version)), msics[comp])
+        np.savetxt(os.path.join(ens_avg_path, r'{}\{}_{}.txt'.format(plane, names[comp], ensemble_method)), msics[comp])
 
     return u_mosaic, v_mosaic, w_mosaic
 
@@ -210,12 +210,9 @@ Ensemble averaging plot setup
 """
 plane = 'y=0'
 
-versions = ['rbf', 'polynomial']
-version = versions[0]
+ensemble_method = 'rbf'
 
-comp = 'w'
-ensemble_method = version
-comp_field = 'potential'
+comp_field = 'CFD'
 
 fill = 0
 unified_color = True
@@ -224,10 +221,21 @@ cbtit_y = -5
 surface = False
 save = True
 
-if version == 'rbf':
+y_ticks = 4
+x_ticks = 5 if plane == 'y=0' or plane == 'z=0' else 4
+degree = 2
+tsize= 22
+axsize = 25
+pad = 15
+tit_y = 1.05
+cbtit_size = 18
+cb_tcksz = 15
+tick_size = 15
+fillsphere = True
+aspect = 1
+
+if ensemble_method == 'rbf':
     f = rbf2d
-if version == 'polynomial':
-    f = poly2
 
 if plane == 'z=0':
     quirk = 'zzero'
@@ -241,11 +249,11 @@ if plane == 'x=-10':
 filenamestart = len(quirk)
 
 try:
-    u_mosaic = np.loadtxt(os.path.join(ens_avg_path, '{}\{}_{}.txt'.format(plane, 'u', version)))
-    v_mosaic = np.loadtxt(os.path.join(ens_avg_path, '{}\{}_{}.txt'.format(plane, 'v', version)))
-    w_mosaic = np.loadtxt(os.path.join(ens_avg_path, '{}\{}_{}.txt'.format(plane, 'w', version)))
+    u_mosaic = np.loadtxt(os.path.join(ens_avg_path, '{}\{}_{}.txt'.format(plane, 'u', ensemble_method)))
+    v_mosaic = np.loadtxt(os.path.join(ens_avg_path, '{}\{}_{}.txt'.format(plane, 'v', ensemble_method)))
+    w_mosaic = np.loadtxt(os.path.join(ens_avg_path, '{}\{}_{}.txt'.format(plane, 'w', ensemble_method)))
 except:
-    u_mosaic, v_mosaic, w_mosaic = interpolate_all(fill=fill, plane=plane, version=version, quirk=quirk, filenamestart=filenamestart, var=re.findall(r'-?\d+', plane)[0], f=f)
+    u_mosaic, v_mosaic, w_mosaic = interpolate_all(fill=fill, plane=plane, ensemble_method=ensemble_method, quirk=quirk, filenamestart=filenamestart, var=re.findall(r'-?\d+', plane)[0], f=f)
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
@@ -263,56 +271,31 @@ except:
           CFD
 ------------------------------------------------------------------------------------------------------------------------
 """
-error_metrics_path = os.path.join(data_path, 'num_error_metrics')
 
 
-def num_error_metrics(method, field_u, field_v, field_w):
-
-    """
-    mean
-    """
-    # u
-    u_mean = field_u.mean()
-    # v
-    v_mean = field_v.mean()
-    # w
-    w_mean = field_w.mean()
-
-    """
-    max/min
-    """
-    # u
-    u_max = field_u.max()
-    u_min = field_u.min()
-    # v
-    v_max = field_v.max()
-    v_min = field_v.min()
-    # w
-    w_max = field_w.max()
-    w_min = field_w.min()
-    """
-    std
-    """
-    # u
-    u_std = field_u.std()
-    # v
-    v_std = field_v.std()
-    # w
-    w_std = field_w.std()
-
-    #names = ['u', 'v', 'w']
-    means = [u_mean, v_mean, w_mean]
-    max = [u_max, v_max, w_max]
-    min = [u_min, v_min, w_min]
-    std = [u_std, v_std, w_std]
-
-    all_met = [means, max, min, std]
-    all_met_array = np.vstack(all_met)
-
-    np.savetxt(os.path.join(error_metrics_path, '_' + method + '.txt'), all_met_array.T)
+def max_min_avg_std():
+    data = np.array([['Maximum'],
+                     ['u: ', u_mosaic.max()],
+                     ['v: ', v_mosaic.max()],
+                     ['w: ', w_mosaic.max()],
+                     ['Minimum'],
+                     ['u: ', u_mosaic.min()],
+                     ['v: ', v_mosaic.min()],
+                     ['w: ', w_mosaic.min()],
+                     ['Mean'],
+                     ['u: ', u_mosaic.mean()],
+                     ['v: ', v_mosaic.mean()],
+                     ['w: ', w_mosaic.mean()],
+                     ['Standard deviation'],
+                     ['u: ', u_mosaic.std()],
+                     ['v: ', v_mosaic.std()],
+                     ['w: ', w_mosaic.std()]]
+                    )
+    np.savetxt(os.path.join(os.path.join(data_analysis, r'data\num_error_metrics\field_subtraction'), ensemble_method + '_vs_' + comp_field + '.txt'), data, fmt='%s')
 
 
-num_error_metrics(method='rbf', field_u=u_mosaic, field_v=v_mosaic, field_w=w_mosaic)
+max_min_avg_std()
+
 
 """
 ------------------------------------------------------------------------------------------------------------------------
@@ -332,23 +315,25 @@ sub_field_path = os.path.join(data_path, 'subtracted_fields')
 
 def subtraction(plane, comp, ensemble_method, comparison_field):
 
-    ens_field = np.loadtxt(os.path.join(plane_path, '{}_{}.txt'.format(comp, ensemble_method)))
-    try:
-        comp_field = np.loadtxt(os.path.join(os.path.join(os.path.join(comp_field_path, comparison_field), plane),
-                                             '{}_{}.txt'.format(comparison_field, comp)))
-    except:
-        if plane is 'y=0' or 'z=0':
-            comp_field = np.zeros((30, 40))
-        else:
-            comp_field = np.zeros((30, 30))
+    for component in comp:
 
-    subtracted_field = ens_field - comp_field
+        ens_field = np.loadtxt(os.path.join(plane_path, '{}_{}.txt'.format(component, ensemble_method)))
+        try:
+            comp_field = np.loadtxt(os.path.join(os.path.join(os.path.join(comp_field_path, comparison_field), plane),
+                                                 '{}_{}.txt'.format(comparison_field, component)))
+        except:
+            if plane is 'y=0' or 'z=0':
+                comp_field = np.zeros((30, 40))
+            else:
+                comp_field = np.zeros((30, 30))
 
-    dif_field = comp + '_' + ensemble_method + '_vs_' + comparison_field
-    np.savetxt(os.path.join(sub_field_path, '{}.txt'.format(dif_field)), subtracted_field)
+        subtracted_field = np.abs(ens_field - comp_field)
+
+        dif_field = component + '_' + ensemble_method + '_vs_' + comparison_field
+        np.savetxt(os.path.join(sub_field_path, '{}.txt'.format(dif_field)), subtracted_field)
 
 
-subtraction(plane=plane, comp=comp, ensemble_method=ensemble_method, comparison_field=comp_field)
+subtraction(plane=plane, comp=['u', 'v', 'w'], ensemble_method=ensemble_method, comparison_field=comp_field)
 
 """
 ------------------------------------------------------------------------------------------------------------------------
@@ -361,35 +346,19 @@ diff_field = w_mosaic
 ------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------
 """
-diff_field = np.loadtxt(os.path.join(sub_field_path, '{}_{}_vs_{}.txt'.format(comp, ensemble_method, comp_field)))
-
-# Fields in plot
-ens_field_title = 'RBF'
-comp_field_title = 'Potential Flow'
 
 # Figure setup
-fig = mplPlotter(light=True).setup2d(figsize=(20, 6))
-
-y_ticks = 4
-x_ticks = 5 if plane == 'y=0' or plane == 'z=0' else 4
-degree = 2
-tsize=25
-axsize = 25
-pad = 15
-tit_y = 1.05
-cbtit_size = 15
-fillsphere = True
-aspect = 1
+fig = mplPlotter(light=True).setup2d(figsize=(20, 5))
 
 if plane == 'z=0' or plane == 'y=0':
     x_bounds = [0, 40]
     y_bounds = [0, 30]
-    if version == 'polynomial':
+    if ensemble_method == 'polynomial':
         values = True
 else:
     x_bounds = [0, 30]
     y_bounds = [0, 30]
-    if version == 'polynomial' and plane == 'x=-10':
+    if ensemble_method == 'polynomial' and plane == 'x=-10':
         values = False
 
 if unified_color is True:
@@ -468,26 +437,28 @@ ax1 = mplPlotter(fig=fig, shape_and_position=131).heatmap(array=u_mosaic, resize
                                                           title_size=tsize,
                                                           title_y=tit_y,
                                                           custom_x_ticklabels=(-20, 20) if plane == 'y=0' or plane == 'z=0' else (-15, 15),
-                                                          custom_y_ticklabels= (-15, 15),
-                                                          xaxis_labelpad=pad - 10,
-                                                          yaxis_labelpad=pad + 10,
-                                                          xaxis_label_size=axsize,
-                                                          yaxis_label_size=axsize,
+                                                          custom_y_ticklabels=(-15, 15),
                                                           xaxis_bold=True,
                                                           yaxis_bold=True,
                                                           x_label='x $[cm]$', y_label='z $[cm]$',
                                                           cb_top_title=True,
                                                           cb_top_title_pad=cbtit_y,
+                                                          x_tick_number=x_ticks,
+                                                          y_tick_number=y_ticks,
                                                           cb_top_title_x=-1,
                                                           cb_title='{} $[m/s]$'.format(comp),
                                                           cb_title_weight='bold',
                                                           cb_title_size=cbtit_size,
                                                           cb_top_title_y=1.1,
-                                                          x_tick_number=x_ticks,
-                                                          y_tick_number=y_ticks,
                                                           more_subplots_left=True,
                                                           shrink=shrink,
-                                                          cb_nticks=5
+                                                          cb_nticks=5,
+                                                          cb_ticklabelsize=cb_tcksz,
+                                                          tick_label_size=tick_size,
+                                                          xaxis_labelpad=pad - 10,
+                                                          yaxis_labelpad=pad + 10,
+                                                          xaxis_label_size=axsize,
+                                                          yaxis_label_size=axsize,
                                                           )
 
 """
@@ -526,7 +497,13 @@ ax2 = mplPlotter(fig=fig, shape_and_position=132).heatmap(array=v_mosaic, resize
                                                           cb_title_weight='bold',
                                                           cb_top_title_y=1.1,
                                                           cb_title_size=cbtit_size,
-                                                          cb_nticks=5
+                                                          cb_nticks=5,
+                                                          cb_ticklabelsize=cb_tcksz,
+                                                          tick_label_size=tick_size,
+                                                          xaxis_labelpad=pad - 10,
+                                                          yaxis_labelpad=pad + 10,
+                                                          xaxis_label_size=axsize,
+                                                          yaxis_label_size=axsize,
                                                           )
 
 """
@@ -565,7 +542,13 @@ ax3 = mplPlotter(fig=fig, shape_and_position=133).heatmap(array=w_mosaic, resize
                                                           cb_title_weight='bold',
                                                           cb_top_title_y=1.1,
                                                           cb_title_size=cbtit_size,
-                                                          cb_nticks=5
+                                                          cb_nticks=5,
+                                                          cb_ticklabelsize=cb_tcksz,
+                                                          tick_label_size=tick_size,
+                                                          xaxis_labelpad=pad - 10,
+                                                          yaxis_labelpad=pad + 10,
+                                                          xaxis_label_size=axsize,
+                                                          yaxis_label_size=axsize,
                                                           )
 
 """
@@ -634,34 +617,7 @@ sphere = Circle(sphere_loc, 7.5, facecolor='white', edgecolor='w', lw=2, fill=fi
 ax3.add_patch(sphere)
 
 if save is True:
-    plt.savefig(os.path.join(img_path, 'Field_Subtraction_{}_vs_{}.png'.format(version, comp_field)),
+    plt.savefig(os.path.join(img_path, 'Field_Subtraction_{}_vs_{}.png'.format(ensemble_method, comp_field)),
                 dpi=150)
-
-"""
-Numerical error metrics
-"""
-
-def max_min_avg_std():
-    data = np.array([['Maximum'],
-                     ['u: ', u_mosaic.max()],
-                     ['v: ', v_mosaic.max()],
-                     ['w: ', w_mosaic.max()],
-                     ['Minimum'],
-                     ['u: ', u_mosaic.min()],
-                     ['v: ', v_mosaic.min()],
-                     ['w: ', w_mosaic.min()],
-                     ['Mean'],
-                     ['u: ', u_mosaic.mean()],
-                     ['v: ', v_mosaic.mean()],
-                     ['w: ', w_mosaic.mean()],
-                     ['Standard deviation'],
-                     ['u: ', u_mosaic.std()],
-                     ['v: ', v_mosaic.std()],
-                     ['w: ', w_mosaic.std()]]
-                    )
-    np.savetxt(os.path.join(os.path.join(data_analysis, r'data\num_error_metrics\field_subtraction'), ensemble_method + '_vs_' + comp_field + '.txt'), data, fmt='%s')
-
-
-max_min_avg_std()
 
 plt.show()

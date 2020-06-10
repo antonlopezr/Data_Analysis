@@ -211,7 +211,7 @@ class MatPlotLibPublicationPlotter:
                 color_bar=False, cb_title=None, cb_axis_labelpad=10, cb_nticks=10, shrink=0.75,
                 cb_outlinewidth=None, cb_title_rotation=None, cb_title_style='normal', cb_title_size=10,
                 cb_top_title_y=1, cb_ytitle_labelpad=10, cb_title_weight='normal', cb_top_title=False, cb_y_title=False,
-                cb_vmin=None, cb_vmax=None,
+                cb_vmin=None, cb_vmax=None, cb_ticklabelsize=10,
                 plot_title='Drop - Wave function', title_bold=False, title_size=12, title_y=1.025,
                 x_label=None, xaxis_bold=False, xaxis_label_size=12, xaxis_labelpad=5, xlabel_rotation=None,
                 x_tick_number=10, x_ticklabels=None, y_label=None, yaxis_bold=False, yaxis_label_size=12, yaxis_labelpad=5, ylabel_rotation=None,
@@ -286,7 +286,8 @@ class MatPlotLibPublicationPlotter:
                            cb_top_title=cb_top_title, cb_top_title_y=cb_top_title_y,
                            cb_vmin=cb_vmin, cb_vmax=cb_vmax,
                            tick_ndecimals=tick_ndecimals,
-                           cb_top_title_x=cb_top_title_x)
+                           cb_top_title_x=cb_top_title_x,
+                           cb_ticklabelsize=cb_ticklabelsize)
 
         # Resize axes
         if custom_subplots is True:
@@ -1416,6 +1417,7 @@ class MatPlotLibPublicationPlotter:
                 weight = 'normal'
             self.ax.set_ylabel(y_label, fontname=self.font, weight=weight,
                                color=self.color, size=yaxis_label_size, labelpad=yaxis_labelpad, rotation=ylabel_rotation)
+            # self.ax.yaxis.set_label_coords(-0.275, 0.425)
 
         # Spines
         #   Color
@@ -1600,7 +1602,7 @@ class MatPlotLibPublicationPlotter:
     def color_bar(self, graph_for_color_bar, cb_title, cb_title_rotation, cb_ytitle_labelpad, cb_nticks,
                   shrink, norm, cb_outlinewidth, cb_title_size, cb_title_style, cb_title_weight, cb_axis_labelpad,
                   cb_y_title, cb_top_title, cb_top_title_y, cb_vmin, cb_vmax, cb_top_title_pad, tick_ndecimals,
-                  cb_top_title_x):
+                  cb_top_title_x, cb_ticklabelsize):
 
         # Take limits from plot
         graph_for_color_bar.set_clim([cb_vmin, cb_vmax])
@@ -1621,7 +1623,7 @@ class MatPlotLibPublicationPlotter:
         #   Direction
         cbar.ax.tick_params(axis='y', direction='out')
         #   Tick label pad and size
-        cbar.ax.yaxis.set_tick_params(pad=cb_axis_labelpad, labelsize=10)
+        cbar.ax.yaxis.set_tick_params(pad=cb_axis_labelpad, labelsize=cb_ticklabelsize)
 
         # Title
         if not isinstance(cb_title, type(None)) and cb_y_title is False and cb_top_title is False:
