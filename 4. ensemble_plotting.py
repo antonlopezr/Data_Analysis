@@ -313,12 +313,12 @@ Ensemble averaging plot setup
 fill = 0
 plane = 'y=0'
 versions = ['rbf', 'rbf2', 'rbf3', 'rbf4', 'rbf5', 'rbf6', 'polynomial']
-version = versions[6]
+version = versions[0]
 unified_color = True
 shrink = 0.69
 cbtit_y = -5
-surface = True
-save = False
+surface = False
+save = True
 
 if version is 'rbf':
     f = rbf
@@ -377,7 +377,7 @@ tsize=25
 axsize = 25
 pad = 15
 tit_y = 1.05
-cbtit_size = 15
+cbtit_size = 17
 fillsphere = True
 aspect = 1
 
@@ -618,7 +618,7 @@ else:
                                                               y_bounds=y_bounds,
                                                               cb_vmax=actualmax1 if not isinstance(actualmax1, type(None)) else find_real_extremes(mosaic)[0],
                                                               cb_vmin=actualmin1 if not isinstance(actualmin1, type(None)) else find_real_extremes(mosaic)[1],
-                                                              plot_title=r'$\mathit{' + comp + '}$' + ' in {} plane'.format(plane),
+                                                              plot_title=None,  # r'$\mathit{' + comp + '}$' + ' in {} plane'.format(plane),
                                                               color_bar=True,
                                                               cb_axis_labelpad=10,
                                                               title_size=tsize,
@@ -643,7 +643,10 @@ else:
                                                               y_tick_number=y_ticks,
                                                               more_subplots_left=True,
                                                               shrink=shrink,
-                                                              cb_nticks=5
+                                                              cb_nticks=5,
+                                                              cb_ticklabelsize=15,
+                                                              x_ticklabel_size=15,
+                                                              y_ticklabel_size=15,
                                                               )
 
     """
@@ -657,7 +660,7 @@ else:
                                                               xresize_pad=0, yresize_pad=0,
                                                               x_bounds=x_bounds,
                                                               y_bounds=y_bounds,
-                                                              plot_title=r'$\mathit{' + comp + '}$' + ' in {} plane'.format(plane),
+                                                              plot_title=None,  # r'$\mathit{' + comp + '}$' + ' in {} plane'.format(plane),
                                                               color_bar=True,
                                                               cb_vmax=actualmax2 if not isinstance(actualmax2, type(None)) else find_real_extremes(mosaic)[0],
                                                               cb_vmin=actualmin2 if not isinstance(actualmin2, type(None)) else find_real_extremes(mosaic)[1],
@@ -668,7 +671,7 @@ else:
                                                               title_y=tit_y,
                                                               cb_top_title_x=-1,
                                                               x_tick_number=x_ticks,
-                                                              y_tick_number=y_ticks,
+                                                              y_tick_number=0,
                                                               more_subplots_left=True,
                                                               shrink=shrink,
                                                               cb_top_title=True,
@@ -677,7 +680,10 @@ else:
                                                               cb_title_weight='bold',
                                                               cb_top_title_y=1.1,
                                                               cb_title_size=cbtit_size,
-                                                              cb_nticks=5
+                                                              cb_nticks=5,
+                                                              cb_ticklabelsize=15,
+                                                              x_ticklabel_size=15,
+                                                              y_ticklabel_size=15,
                                                               )
 
     """
@@ -691,7 +697,7 @@ else:
                                                               xresize_pad=0, yresize_pad=0,
                                                               x_bounds=x_bounds,
                                                               y_bounds=y_bounds,
-                                                              plot_title=r'$\mathit{' + comp + '}$' + ' in {} plane'.format(plane),
+                                                              plot_title=None,  # r'$\mathit{' + comp + '}$' + ' in {} plane'.format(plane),
                                                               color_bar=True,
                                                               cb_vmax=actualmax3 if not isinstance(actualmax3, type(None)) else find_real_extremes(mosaic)[0],
                                                               cb_vmin=actualmin3 if not isinstance(actualmin3, type(None)) else find_real_extremes(mosaic)[1],
@@ -700,7 +706,7 @@ else:
                                                               title_y=tit_y,
                                                               cb_top_title_x=-1,
                                                               x_tick_number=x_ticks,
-                                                              y_tick_number=y_ticks,
+                                                              y_tick_number=0,
                                                               custom_x_ticklabels=(-20, 20) if plane == 'y=0' or plane == 'z=0' else (-15, 15),
                                                               custom_y_ticklabels=(-15, 15),
                                                               more_subplots_left=True,
@@ -711,7 +717,10 @@ else:
                                                               cb_title_weight='bold',
                                                               cb_top_title_y=1.1,
                                                               cb_title_size=cbtit_size,
-                                                              cb_nticks=5
+                                                              cb_nticks=5,
+                                                              cb_ticklabelsize=15,
+                                                              x_ticklabel_size=15,
+                                                              y_ticklabel_size=15,
                                                               )
 
     """

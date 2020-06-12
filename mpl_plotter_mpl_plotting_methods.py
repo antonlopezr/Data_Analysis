@@ -772,7 +772,7 @@ class MatPlotLibPublicationPlotter:
                   color_bar=False, cb_title=None, cb_axis_labelpad=10, cb_nticks=10, shrink=0.75,
                   cb_outlinewidth=None, cb_title_rotation=None, cb_title_style='normal', cb_title_size=10,
                   cb_top_title_y=1, cb_ytitle_labelpad=10, cb_title_weight='normal', cb_top_title=False,
-                  cb_y_title=False,
+                  cb_y_title=False, cb_ticklabelsize=10,
                   cb_vmin=None, cb_vmax=None,
                   plot_title='Drop - Wave function', title_bold=False, title_size=12, title_y=1,
                   x_label='x', xaxis_bold=False, xaxis_label_size=12, xaxis_labelpad=5,
@@ -847,7 +847,8 @@ class MatPlotLibPublicationPlotter:
                            cb_top_title=cb_top_title, cb_top_title_y=cb_top_title_y,
                            cb_vmin=cb_vmin, cb_vmax=cb_vmax,
                            tick_ndecimals=tick_ndecimals,
-                           cb_top_title_x=cb_top_title_x)
+                           cb_top_title_x=cb_top_title_x,
+                           cb_ticklabelsize=cb_ticklabelsize)
         # Resize axes
         if resize_axes is True:
             z_pad = z_pad if z_pad > (abs(z.max()) + abs(z.min())) / 16 else (abs(z.max()) + abs(z.min())) / 16
