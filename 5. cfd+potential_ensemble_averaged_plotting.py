@@ -10,7 +10,7 @@ from matplotlib.patches import Rectangle
 
 from mpl_plotter_mpl_plotting_methods import MatPlotLibPublicationPlotter as mplPlotter
 
-plane = 'y=0'
+plane = 'x=-10'
 
 data_analysis = os.path.dirname(__file__)
 data_path = os.path.join(data_analysis, 'data')
@@ -20,10 +20,11 @@ uncertainty_path = os.path.join(data_path, 'uncertainty_mean_estimate')
 
 comp_field_path = os.path.join(data_path, 'comparison_fields')
 
-cfd_field_path = os.path.join(os.path.join(comp_field_path, 'CFD'), plane)
-
 ensemble_method = 'rbf'
-comp_field = 'cfd'
+comp_fields = ['CFD', 'potential']
+comp_field = comp_fields[0]
+
+comparison_field_path = os.path.join(os.path.join(comp_field_path, comp_field), plane)
 
 if plane is 'x=10' or plane is 'x=-10':
     figsize = (20, 5)
@@ -66,55 +67,6 @@ else:
     fillsphere = True
     aspect = 1
 
-if plane == 'z=0' or plane == 'y=0':
-    x_bounds = [0, 40]
-    y_bounds = [0, 30]
-
-else:
-    x_bounds = [0, 30]
-    y_bounds = [0, 30]
-
-# Field subtraction
-values = False
-
-if values is True:
-    if plane == 'x=-10':
-        actualmax1 = 12
-        actualmin1 = 5
-
-        actualmax2 = 2
-        actualmin2 = -2
-
-        actualmax3 = 2.5
-        actualmin3 = -2.5
-    if plane == 'x=10':
-        actualmax1 = 15
-        actualmin1 = -6
-
-        actualmax2 = 6
-        actualmin2 = -6
-
-        actualmax3 = 5
-        actualmin3 = -5
-    if plane == 'y=0' or plane == 'z=0':
-        actualmax1 = 14.5
-        actualmin1 = -3
-
-        actualmax2 = 6
-        actualmin2 = -6
-
-        actualmax3 = 6
-        actualmin3 = -6
-else:
-    actualmax1 = None
-    actualmin1 = None
-
-    actualmax2 = None
-    actualmin2 = None
-
-    actualmax3 = None
-    actualmin3 = None
-
 # Figure setup
 fig = mplPlotter(light=True).setup2d(figsize=figsize)
 
@@ -127,36 +79,45 @@ else:
     y_bounds = [0, 30]
 
 # CFD field
-values = False
+values = True
 
 if values is True:
     if plane == 'x=-10':
         actualmax1 = 12
-        actualmin1 = 5
+        actualmin1 = 0
 
-        actualmax2 = 2
-        actualmin2 = -2
+        actualmax2 = 2.5
+        actualmin2 = -2.5
 
         actualmax3 = 2.5
         actualmin3 = -2.5
     if plane == 'x=10':
-        actualmax1 = 15
-        actualmin1 = -6
+        actualmax1 = 12
+        actualmin1 = 0
 
-        actualmax2 = 6
-        actualmin2 = -6
+        actualmax2 = 2.5
+        actualmin2 = -2.5
+
+        actualmax3 = 2.5
+        actualmin3 = -2.5
+    if plane == 'y=0':
+        actualmax1 = 12.5
+        actualmin1 = 0
+
+        actualmax2 = 1
+        actualmin2 = -1
 
         actualmax3 = 5
         actualmin3 = -5
-    if plane == 'y=0' or plane == 'z=0':
-        actualmax1 = 14.5
-        actualmin1 = -3
+    if plane == 'z=0':
+        actualmax1 = 12.5
+        actualmin1 = 0
 
-        actualmax2 = 6
-        actualmin2 = -6
+        actualmax2 = 5
+        actualmin2 = -5
 
-        actualmax3 = 6
-        actualmin3 = -6
+        actualmax3 = 1
+        actualmin3 = -1
 else:
     actualmax1 = None
     actualmin1 = None
@@ -180,7 +141,7 @@ u
 """
 comp = 'u'
 
-u_mosaic = np.loadtxt(os.path.join(cfd_field_path, '{}_{}.txt'.format(comp, 'CFD')))
+u_mosaic = np.loadtxt(os.path.join(comparison_field_path, '{}_{}.txt'.format(comp, comp_field) if comp_field == 'CFD' else '{}_{}.txt'.format(comp_field, comp)))
 
 ax1 = mplPlotter(fig=fig, shape_and_position=131).heatmap(array=u_mosaic, resize_axes=True, aspect=aspect,
                                                           tick_ndecimals=1,
@@ -189,7 +150,7 @@ ax1 = mplPlotter(fig=fig, shape_and_position=131).heatmap(array=u_mosaic, resize
                                                           y_bounds=y_bounds,
                                                           cb_vmax=actualmax1 if not isinstance(actualmax1, type(None)) else find_real_extremes(u_mosaic)[0],
                                                           cb_vmin=actualmin1 if not isinstance(actualmin1, type(None)) else find_real_extremes(u_mosaic)[1],
-                                                          plot_title=r'$\mathit{' + comp + '}$' + ' in {} plane'.format(plane),
+                                                          plot_title=None,  # r'$\mathit{' + comp + '}$' + ' in {} plane'.format(plane),
                                                           color_bar=True,
                                                           cb_axis_labelpad=10,
                                                           title_size=tsize,
@@ -225,10 +186,10 @@ v
 comp = 'v'
 
 try:
-    v_mosaic = np.loadtxt(os.path.join(cfd_field_path, '{}_{}.txt'.format(comp, 'CFD')))
+    v_mosaic = np.loadtxt(os.path.join(comparison_field_path, '{}_{}.txt'.format(comp, comp_field) if comp_field == 'CFD' else '{}_{}.txt'.format(comp_field, comp)))
 except:
     if plane is 'y=0' or 'z=0':
-        v_mosaic = np.zeros((40, 30))
+        v_mosaic = np.zeros((30, 40))
     else:
         v_mosaic = np.zeros((30, 30))
 
@@ -237,7 +198,7 @@ ax2 = mplPlotter(fig=fig, shape_and_position=132).heatmap(array=v_mosaic, resize
                                                           xresize_pad=0, yresize_pad=0,
                                                           x_bounds=x_bounds,
                                                           y_bounds=y_bounds,
-                                                          plot_title=r'$\mathit{' + comp + '}$' + ' in {} plane'.format(plane),
+                                                          plot_title=None,  # r'$\mathit{' + comp + '}$' + ' in {} plane'.format(plane),
                                                           color_bar=True,
                                                           cb_vmax=actualmax2 if not isinstance(actualmax2, type(None)) else find_real_extremes(v_mosaic)[0],
                                                           cb_vmin=actualmin2 if not isinstance(actualmin2, type(None)) else find_real_extremes(v_mosaic)[1],
@@ -248,7 +209,7 @@ ax2 = mplPlotter(fig=fig, shape_and_position=132).heatmap(array=v_mosaic, resize
                                                           title_y=tit_y,
                                                           cb_top_title_x=-1,
                                                           x_tick_number=x_ticks,
-                                                          y_tick_number=y_ticks,
+                                                          y_tick_number=0,
                                                           more_subplots_left=True,
                                                           shrink=shrink,
                                                           cb_top_title=True,
@@ -268,10 +229,10 @@ w
 comp = 'w'
 
 try:
-    w_mosaic = np.loadtxt(os.path.join(cfd_field_path, '{}_{}.txt'.format(comp, 'CFD')))
+    w_mosaic = np.loadtxt(os.path.join(comparison_field_path, '{}_{}.txt'.format(comp, comp_field) if comp_field == 'CFD' else '{}_{}.txt'.format(comp_field, comp)))
 except:
     if plane is 'y=0' or 'z=0':
-        w_mosaic = np.zeros((40, 30))
+        w_mosaic = np.zeros((30, 40))
     else:
         w_mosaic = np.zeros((30, 30))
 
@@ -280,7 +241,7 @@ ax3 = mplPlotter(fig=fig, shape_and_position=133).heatmap(array=w_mosaic, resize
                                                           xresize_pad=0, yresize_pad=0,
                                                           x_bounds=x_bounds,
                                                           y_bounds=y_bounds,
-                                                          plot_title=r'$\mathit{' + comp + '}$' + ' in {} plane'.format(plane),
+                                                          plot_title=None,  # r'$\mathit{' + comp + '}$' + ' in {} plane'.format(plane),
                                                           color_bar=True,
                                                           cb_vmax=actualmax3 if not isinstance(actualmax3, type(None)) else find_real_extremes(w_mosaic)[0],
                                                           cb_vmin=actualmin3 if not isinstance(actualmin3, type(None)) else find_real_extremes(w_mosaic)[1],
@@ -289,7 +250,7 @@ ax3 = mplPlotter(fig=fig, shape_and_position=133).heatmap(array=w_mosaic, resize
                                                           title_y=tit_y,
                                                           cb_top_title_x=-1,
                                                           x_tick_number=x_ticks,
-                                                          y_tick_number=y_ticks,
+                                                          y_tick_number=0,
                                                           custom_x_ticklabels=(-20, 20) if plane == 'y=0' or plane == 'z=0' else (-15, 15),
                                                           custom_y_ticklabels=(-15, 15),
                                                           more_subplots_left=True,
@@ -371,7 +332,7 @@ sphere = Circle(sphere_loc, 7.5, facecolor='white', edgecolor='w', lw=2, fill=fi
 ax3.add_patch(sphere)
 
 if save is True:
-    plt.savefig(os.path.join(img_path, 'CFD_Ensemble_Averaging_{}.png'.format(plane)),
+    plt.savefig(os.path.join(img_path, '{}_Ensemble_Averaging_{}.png'.format(comp_field, plane)),
                 dpi=150)
 
 

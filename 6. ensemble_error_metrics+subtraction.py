@@ -210,11 +210,13 @@ def find_real_extremes(mosaic):
 """
 Ensemble averaging plot setup
 """
-plane = 'y=0'
+plane = 'x=-10'
 
 ensemble_method = 'rbf'
 
-comp_field = 'potential'
+comp_fields = ['CFD', 'potential']
+
+comp_field = comp_fields[0]
 
 
 if plane == 'x=10' or plane == 'x=-10':
@@ -315,10 +317,6 @@ def max_min_avg_std():
                     )
     np.savetxt(os.path.join(os.path.join(data_analysis, r'data\num_error_metrics\field_subtraction'), plane + ensemble_method + '_vs_' + comp_field + '.txt'), data, fmt='%s')
 
-
-max_min_avg_std()
-
-
 """
 ------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------
@@ -377,45 +375,50 @@ fig = mplPlotter(light=True).setup2d(figsize=(20, 5))
 if plane == 'z=0' or plane == 'y=0':
     x_bounds = [0, 40]
     y_bounds = [0, 30]
-    if ensemble_method == 'polynomial':
-        values = True
 else:
     x_bounds = [0, 30]
     y_bounds = [0, 30]
-    if ensemble_method == 'polynomial' and plane == 'x=-10':
-        values = False
 
 # Field subtraction
-values = False
+values = True
 
 if values is True:
     if plane == 'x=-10':
         actualmax1 = 12
-        actualmin1 = 5
+        actualmin1 = 0
 
-        actualmax2 = 2
-        actualmin2 = -2
+        actualmax2 = 1.5
+        actualmin2 = 0
 
-        actualmax3 = 2.5
-        actualmin3 = -2.5
+        actualmax3 = 1.5
+        actualmin3 = 0
     if plane == 'x=10':
-        actualmax1 = 15
-        actualmin1 = -6
+        actualmax1 = 12
+        actualmin1 = 0
 
-        actualmax2 = 6
-        actualmin2 = -6
+        actualmax2 = 5
+        actualmin2 = 0
 
         actualmax3 = 5
-        actualmin3 = -5
-    if plane == 'y=0' or plane == 'z=0':
-        actualmax1 = 14.5
-        actualmin1 = -3
+        actualmin3 = 0
+    if plane == 'y=0':
+        actualmax1 = 13.5
+        actualmin1 = 0
 
-        actualmax2 = 6
-        actualmin2 = -6
+        actualmax2 = 2
+        actualmin2 = 0
 
-        actualmax3 = 6
-        actualmin3 = -6
+        actualmax3 = 7
+        actualmin3 = 0
+    if plane == 'z=0':
+        actualmax1 = 15
+        actualmin1 = 0
+
+        actualmax2 = 7
+        actualmin2 = 0
+
+        actualmax3 = 2
+        actualmin3 = 0
 else:
     actualmax1 = None
     actualmin1 = None
@@ -452,7 +455,7 @@ ax1 = mplPlotter(fig=fig, shape_and_position=131).heatmap(array=u_mosaic, resize
                                                           y_bounds=y_bounds,
                                                           cb_vmax=actualmax1 if not isinstance(actualmax1, type(None)) else find_real_extremes(u_mosaic)[0],
                                                           cb_vmin=actualmin1 if not isinstance(actualmin1, type(None)) else find_real_extremes(u_mosaic)[1],
-                                                          plot_title=r'$\mathit{' + comp + '}$' + ' in {} plane'.format(plane),
+                                                          plot_title=None,  # r'$\mathit{' + comp + '}$' + ' in {} plane'.format(plane),
                                                           color_bar=True,
                                                           cb_axis_labelpad=10,
                                                           title_size=tsize,
@@ -498,18 +501,18 @@ ax2 = mplPlotter(fig=fig, shape_and_position=132).heatmap(array=v_mosaic, resize
                                                           xresize_pad=0, yresize_pad=0,
                                                           x_bounds=x_bounds,
                                                           y_bounds=y_bounds,
-                                                          plot_title=r'$\mathit{' + comp + '}$' + ' in {} plane'.format(plane),
+                                                          plot_title=None,  # r'$\mathit{' + comp + '}$' + ' in {} plane'.format(plane),
                                                           color_bar=True,
                                                           cb_vmax=actualmax2 if not isinstance(actualmax2, type(None)) else find_real_extremes(v_mosaic)[0],
                                                           cb_vmin=actualmin2 if not isinstance(actualmin2, type(None)) else find_real_extremes(v_mosaic)[1],
                                                           cb_axis_labelpad=10,
                                                           title_size=tsize,
                                                           custom_x_ticklabels=(-20, 20) if plane == 'y=0' or plane == 'z=0' else (-15, 15),
-                                                          custom_y_ticklabels= (-15, 15),
+                                                          custom_y_ticklabels=None,
                                                           title_y=tit_y,
                                                           cb_top_title_x=-1,
                                                           x_tick_number=x_ticks,
-                                                          y_tick_number=y_ticks,
+                                                          y_tick_number=0,
                                                           more_subplots_left=True,
                                                           shrink=shrink,
                                                           cb_top_title=True,
@@ -543,7 +546,7 @@ ax3 = mplPlotter(fig=fig, shape_and_position=133).heatmap(array=w_mosaic, resize
                                                           xresize_pad=0, yresize_pad=0,
                                                           x_bounds=x_bounds,
                                                           y_bounds=y_bounds,
-                                                          plot_title=r'$\mathit{' + comp + '}$' + ' in {} plane'.format(plane),
+                                                          plot_title=None,  # r'$\mathit{' + comp + '}$' + ' in {} plane'.format(plane),
                                                           color_bar=True,
                                                           cb_vmax=actualmax3 if not isinstance(actualmax3, type(None)) else find_real_extremes(w_mosaic)[0],
                                                           cb_vmin=actualmin3 if not isinstance(actualmin3, type(None)) else find_real_extremes(w_mosaic)[1],
@@ -552,9 +555,9 @@ ax3 = mplPlotter(fig=fig, shape_and_position=133).heatmap(array=w_mosaic, resize
                                                           title_y=tit_y,
                                                           cb_top_title_x=-1,
                                                           x_tick_number=x_ticks,
-                                                          y_tick_number=y_ticks,
+                                                          y_tick_number=0,
                                                           custom_x_ticklabels=(-20, 20) if plane == 'y=0' or plane == 'z=0' else (-15, 15),
-                                                          custom_y_ticklabels=(-15, 15),
+                                                          custom_y_ticklabels=None,
                                                           more_subplots_left=True,
                                                           shrink=shrink,
                                                           cb_top_title=True,
@@ -641,6 +644,6 @@ if save is True:
     plt.savefig(os.path.join(img_path, '{}_Field_Subtraction_{}_vs_{}.png'.format(plane, ensemble_method, comp_field)),
                 dpi=150)
 
-print(save)
+max_min_avg_std()
 
 plt.show()

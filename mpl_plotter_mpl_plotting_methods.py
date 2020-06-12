@@ -110,7 +110,7 @@ class MatPlotLibPublicationPlotter:
                color_bar=False, cb_title=None, cb_axis_labelpad=10, cb_nticks=10, shrink=0.75,
                cb_outlinewidth=None, cb_title_rotation=None, cb_title_style='normal', cb_title_size=10,
                cb_top_title_y=1, cb_ytitle_labelpad=10, cb_title_weight='normal', cb_top_title=False, cb_y_title=False,
-               cb_vmin=None, cb_vmax=None,
+               cb_vmin=None, cb_vmax=None, cb_ticklabelsize=10,
                label=None, prune=None, resize_axes=True, custom_subplots=False, aspect=1,
                plot_title='Spirograph', title_bold=False, title_size=12, title_y=1.025,
                x_label='x', xaxis_bold=False, xaxis_label_size=12, xaxis_labelpad=5, xlabel_rotation=None,
@@ -157,7 +157,8 @@ class MatPlotLibPublicationPlotter:
                            cb_top_title=cb_top_title, cb_top_title_y=cb_top_title_y,
                            cb_vmin=cb_vmin, cb_vmax=cb_vmax,
                            tick_ndecimals=tick_ndecimals,
-                           cb_top_title_x=cb_top_title_x)
+                           cb_top_title_x=cb_top_title_x,
+                           cb_ticklabelsize=cb_ticklabelsize)
 
         # Legend
         if legend is True:
@@ -1417,7 +1418,7 @@ class MatPlotLibPublicationPlotter:
                 weight = 'normal'
             self.ax.set_ylabel(y_label, fontname=self.font, weight=weight,
                                color=self.color, size=yaxis_label_size, labelpad=yaxis_labelpad, rotation=ylabel_rotation)
-            # self.ax.yaxis.set_label_coords(-0.275, 0.425)
+            self.ax.yaxis.set_label_coords(-0.275, 0.425)
 
         # Spines
         #   Color
