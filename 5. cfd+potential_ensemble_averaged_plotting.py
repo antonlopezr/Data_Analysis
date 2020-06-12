@@ -5,12 +5,13 @@ import os.path
 
 import matplotlib.pyplot as plt
 
+from matplotlib import colors
 from matplotlib.patches import Circle
 from matplotlib.patches import Rectangle
 
 from mpl_plotter_mpl_plotting_methods import MatPlotLibPublicationPlotter as mplPlotter
 
-plane = 'x=-10'
+plane = 'y=0'
 
 data_analysis = os.path.dirname(__file__)
 data_path = os.path.join(data_analysis, 'data')
@@ -136,12 +137,61 @@ def find_real_extremes(mosaic):
     max = df.max().max()
     return max, min
 
+
+"""
+Get fields
+"""
+
+u_mosaic = np.loadtxt(os.path.join(comparison_field_path, '{}_{}.txt'.format('u', comp_field) if comp_field == 'CFD' else '{}_{}.txt'.format(comp_field, 'u')))
+
+try:
+    v_mosaic = np.loadtxt(os.path.join(comparison_field_path, '{}_{}.txt'.format('v', comp_field) if comp_field == 'CFD' else '{}_{}.txt'.format(comp_field, 'v')))
+except:
+    if plane is 'y=0' or 'z=0':
+        v_mosaic = np.zeros((30, 40))
+    else:
+        v_mosaic = np.zeros((30, 30))
+
+try:
+    w_mosaic = np.loadtxt(os.path.join(comparison_field_path, '{}_{}.txt'.format('w',
+                                                                                 comp_field) if comp_field == 'CFD' else '{}_{}.txt'.format(
+        comp_field, 'w')))
+except:
+    if plane is 'y=0' or 'z=0':
+        w_mosaic = np.zeros((30, 40))
+    else:
+        w_mosaic = np.zeros((30, 30))
+
+
+masks = [np.where(u_mosaic == 0), np.where(v_mosaic == 0), np.where(w_mosaic == 0)]
+
+def empty_value_fields():
+    u_empty = np.zeros((30, 40))
+    v_empty = np.zeros((30, 40))
+    w_empty = np.zeros((30, 40))
+
+    u_empty[masks[0]] = 1
+    v_empty[masks[1]] = 1
+    w_empty[masks[2]] = 1
+
+    return u_empty, v_empty, w_empty
+
+
+def transp_colormap():
+    cmap = colors.ListedColormap([(0, 0, 0, 0), (0, 0, 0, 1)])
+    bounds = [1]
+    norm = colors.BoundaryNorm(bounds, cmap.N)
+    return cmap
+
+
+u_empty, v_empty, w_empty = empty_value_fields()
+
+cmap_empty = transp_colormap()
+
 """
 u
 """
 comp = 'u'
-
-u_mosaic = np.loadtxt(os.path.join(comparison_field_path, '{}_{}.txt'.format(comp, comp_field) if comp_field == 'CFD' else '{}_{}.txt'.format(comp_field, comp)))
 
 ax1 = mplPlotter(fig=fig, shape_and_position=131).heatmap(array=u_mosaic, resize_axes=True, aspect=aspect,
                                                           tick_ndecimals=1,
@@ -180,18 +230,19 @@ ax1 = mplPlotter(fig=fig, shape_and_position=131).heatmap(array=u_mosaic, resize
                                                           tick_label_size=tick_size,
                                                           )
 
+mplPlotter(fig=fig, ax=ax1).heatmap(array=u_empty, resize_axes=False, cmap=cmap_empty,
+                                    x_tick_number=x_ticks,
+                                    y_tick_number=y_ticks,
+                                    custom_x_ticklabels=(-20, 20) if plane == 'y=0' or plane == 'z=0' else (-15, 15),
+                                    custom_y_ticklabels=(-15, 15),
+                                    plot_title=None,
+                                    more_subplots_left=True,
+                                    )
+
 """
 v
 """
 comp = 'v'
-
-try:
-    v_mosaic = np.loadtxt(os.path.join(comparison_field_path, '{}_{}.txt'.format(comp, comp_field) if comp_field == 'CFD' else '{}_{}.txt'.format(comp_field, comp)))
-except:
-    if plane is 'y=0' or 'z=0':
-        v_mosaic = np.zeros((30, 40))
-    else:
-        v_mosaic = np.zeros((30, 30))
 
 ax2 = mplPlotter(fig=fig, shape_and_position=132).heatmap(array=v_mosaic, resize_axes=True, aspect=aspect,
                                                           tick_ndecimals=1,
@@ -223,18 +274,19 @@ ax2 = mplPlotter(fig=fig, shape_and_position=132).heatmap(array=v_mosaic, resize
                                                           tick_label_size=tick_size,
                                                           )
 
+mplPlotter(fig=fig, ax=ax2).heatmap(array=v_empty, resize_axes=False, cmap=cmap_empty,
+                                    x_tick_number=x_ticks,
+                                    y_tick_number=y_ticks,
+                                    custom_x_ticklabels=(-20, 20) if plane == 'y=0' or plane == 'z=0' else (-15, 15),
+                                    custom_y_ticklabels=(-15, 15),
+                                    plot_title=None,
+                                    more_subplots_left=True,
+                                    )
+
 """
 w
 """
 comp = 'w'
-
-try:
-    w_mosaic = np.loadtxt(os.path.join(comparison_field_path, '{}_{}.txt'.format(comp, comp_field) if comp_field == 'CFD' else '{}_{}.txt'.format(comp_field, comp)))
-except:
-    if plane is 'y=0' or 'z=0':
-        w_mosaic = np.zeros((30, 40))
-    else:
-        w_mosaic = np.zeros((30, 30))
 
 ax3 = mplPlotter(fig=fig, shape_and_position=133).heatmap(array=w_mosaic, resize_axes=True, aspect=aspect,
                                                           tick_ndecimals=1,
@@ -265,6 +317,15 @@ ax3 = mplPlotter(fig=fig, shape_and_position=133).heatmap(array=w_mosaic, resize
                                                           cb_ticklabelsize=cb_tcksz,
                                                           tick_label_size=tick_size,
                                                           )
+
+mplPlotter(fig=fig, ax=ax3).heatmap(array=w_empty, resize_axes=False, cmap=cmap_empty,
+                                    x_tick_number=x_ticks,
+                                    y_tick_number=y_ticks,
+                                    custom_x_ticklabels=(-20, 20) if plane == 'y=0' or plane == 'z=0' else (-15, 15),
+                                    custom_y_ticklabels=(-15, 15),
+                                    plot_title=None,
+                                    more_subplots_left=True,
+                                    )
 
 """
 u shapes

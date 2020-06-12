@@ -10,10 +10,64 @@ import os.path
 
 import matplotlib.pyplot as plt
 
+from matplotlib import colors
 from matplotlib.patches import Circle
 from matplotlib.patches import Rectangle
 
 from mpl_plotter_mpl_plotting_methods import MatPlotLibPublicationPlotter as mplPlotter
+
+"""
+Control
+"""
+
+plane = 'y=0'
+
+ensemble_method = 'rbf'
+
+comp_fields = ['CFD', 'potential']
+
+comp_field = comp_fields[0]
+
+save = True
+metrics = False
+
+
+if plane == 'x=10' or plane == 'x=-10':
+    figsize = (20, 5)
+    fill = 0
+    shrink = 0.9
+    cbtit_y = -5
+
+    y_ticks = 4
+    x_ticks = 5 if plane == 'y=0' or plane == 'z=0' else 4
+    degree = 2
+    tsize = 22
+    axsize = 25
+    pad = 9
+    tit_y = 1.05
+    cbtit_size = 18
+    fillsphere = True
+    aspect = 1
+    cb_tcksz = 15
+    tick_size = 15
+else:
+    figsize = (20, 5)
+    fill = 0
+    shrink = 0.69
+    cbtit_y = -5
+
+    y_ticks = 4
+    x_ticks = 5 if plane == 'y=0' or plane == 'z=0' else 4
+    degree = 2
+    tsize = 22
+    axsize = 25
+    pad = 15
+    tit_y = 1.05
+    cbtit_size = 18
+    cb_tcksz = 15
+    tick_size = 15
+    fillsphere = True
+    aspect = 1
 
 """
 Paths
@@ -210,53 +264,6 @@ def find_real_extremes(mosaic):
 """
 Ensemble averaging plot setup
 """
-plane = 'x=-10'
-
-ensemble_method = 'rbf'
-
-comp_fields = ['CFD', 'potential']
-
-comp_field = comp_fields[0]
-
-
-if plane == 'x=10' or plane == 'x=-10':
-    figsize = (20, 5)
-    fill = 0
-    shrink = 0.9
-    cbtit_y = -5
-    save = True
-
-    y_ticks = 4
-    x_ticks = 5 if plane == 'y=0' or plane == 'z=0' else 4
-    degree = 2
-    tsize = 22
-    axsize = 25
-    pad = 9
-    tit_y = 1.05
-    cbtit_size = 18
-    fillsphere = True
-    aspect = 1
-    cb_tcksz = 15
-    tick_size = 15
-else:
-    figsize = (20, 5)
-    fill = 0
-    shrink = 0.69
-    cbtit_y = -5
-    save = True
-
-    y_ticks = 4
-    x_ticks = 5 if plane == 'y=0' or plane == 'z=0' else 4
-    degree = 2
-    tsize = 22
-    axsize = 25
-    pad = 15
-    tit_y = 1.05
-    cbtit_size = 18
-    cb_tcksz = 15
-    tick_size = 15
-    fillsphere = True
-    aspect = 1
 
 if ensemble_method == 'rbf':
     f = rbf2d
@@ -297,7 +304,7 @@ except:
 """
 
 
-def max_min_avg_std():
+def max_min_avg_std(u_mosaic, v_mosaic, w_mosaic):
     data = np.array([['Maximum'],
                      ['u: ', u_mosaic.max()],
                      ['v: ', v_mosaic.max()],
@@ -315,7 +322,9 @@ def max_min_avg_std():
                      ['v: ', v_mosaic.std()],
                      ['w: ', w_mosaic.std()]]
                     )
-    np.savetxt(os.path.join(os.path.join(data_analysis, r'data\num_error_metrics\field_subtraction'), plane + ensemble_method + '_vs_' + comp_field + '.txt'), data, fmt='%s')
+    path = os.path.join(os.path.join(data_analysis, r'data\num_error_metrics\field_subtraction'), plane + ensemble_method + '_vs_' + comp_field + '.txt')
+    print(path)
+    np.savetxt(path, data, fmt='%s')
 
 """
 ------------------------------------------------------------------------------------------------------------------------
@@ -334,6 +343,8 @@ sub_field_path = os.path.join(data_path, 'subtracted_fields')
 
 
 def subtraction(plane, comp, ensemble_method, comparison_field):
+
+    masks = []
 
     for component in comp:
         ens_field = np.loadtxt(os.path.join(plane_path, '{}_{}.txt'.format(component, ensemble_method)))
@@ -354,8 +365,73 @@ def subtraction(plane, comp, ensemble_method, comparison_field):
         dif_field = component + '_' + ensemble_method + '_vs_' + comparison_field
         np.savetxt(os.path.join(sub_field_path, '{}.txt'.format(dif_field)), subtracted_field)
 
+        masks.append(np.where(comp_field == 0))
 
-subtraction(plane=plane, comp=['u', 'v', 'w'], ensemble_method=ensemble_method, comparison_field=comp_field)
+    return masks
+
+
+def cfd_metrics(plane, comp, ensemble_method, comparison_field):
+
+    mosaics = []
+
+    for component in comp:
+        ens_field = np.loadtxt(os.path.join(plane_path, '{}_{}.txt'.format(component, ensemble_method)))
+
+        specific_comp_field_path = os.path.join(os.path.join(comp_field_path, comparison_field), plane)
+        filename = '{}_{}.txt'.format(comparison_field,
+                                      component) if comparison_field == 'potential' else '{}_{}.txt'.format(component, comparison_field)
+
+        try:
+            comp_field = np.loadtxt(os.path.join(specific_comp_field_path, filename))
+        except:
+            if plane == 'y=0' or plane == 'z=0':
+                comp_field = np.zeros((30, 40))
+            else:
+                comp_field = np.zeros((30, 30))
+
+        if comparison_field == 'CFD':
+            metrics_ens_field = ens_field.flatten()
+            metrics_comp_field = comp_field.flatten()
+
+            mask = np.where(metrics_comp_field == 0)
+
+            metrics_ens_field = np.delete(metrics_ens_field, mask)
+            metrics_comp_field = np.delete(metrics_comp_field, mask)
+
+            metrics_subtracted_field = np.abs(metrics_ens_field - metrics_comp_field)
+
+            mosaics.append(metrics_subtracted_field)
+
+    u_mosaic, v_mosaic, w_mosaic = mosaics
+
+    max_min_avg_std(u_mosaic, v_mosaic, w_mosaic)
+
+
+masks = subtraction(plane=plane, comp=['u', 'v', 'w'], ensemble_method=ensemble_method, comparison_field=comp_field)
+
+
+def empty_value_fields():
+    u_empty = np.zeros((30, 40))
+    v_empty = np.zeros((30, 40))
+    w_empty = np.zeros((30, 40))
+
+    u_empty[masks[0]] = 1
+    v_empty[masks[1]] = 1
+    w_empty[masks[2]] = 1
+
+    return u_empty, v_empty, w_empty
+
+
+def transp_colormap():
+    cmap = colors.ListedColormap([(0, 0, 0, 0), (0, 0, 0, 1)])
+    bounds = [1]
+    norm = colors.BoundaryNorm(bounds, cmap.N)
+    return cmap
+
+
+u_empty, v_empty, w_empty = empty_value_fields()
+
+cmap_empty = transp_colormap()
 
 """
 ------------------------------------------------------------------------------------------------------------------------
@@ -460,8 +536,6 @@ ax1 = mplPlotter(fig=fig, shape_and_position=131).heatmap(array=u_mosaic, resize
                                                           cb_axis_labelpad=10,
                                                           title_size=tsize,
                                                           title_y=tit_y,
-                                                          custom_x_ticklabels=(-20, 20) if plane == 'y=0' or plane == 'z=0' else (-15, 15),
-                                                          custom_y_ticklabels=(-15, 15),
                                                           xaxis_bold=True,
                                                           yaxis_bold=True,
                                                           x_label='x $[cm]$', y_label='z $[cm]$',
@@ -469,6 +543,8 @@ ax1 = mplPlotter(fig=fig, shape_and_position=131).heatmap(array=u_mosaic, resize
                                                           cb_top_title_pad=cbtit_y,
                                                           x_tick_number=x_ticks,
                                                           y_tick_number=y_ticks,
+                                                          custom_x_ticklabels=(-20, 20) if plane == 'y=0' or plane == 'z=0' else (-15, 15),
+                                                          custom_y_ticklabels=(-15, 15),
                                                           cb_top_title_x=-1,
                                                           cb_title='{} $[m/s]$'.format(comp),
                                                           cb_title_weight='bold',
@@ -484,6 +560,14 @@ ax1 = mplPlotter(fig=fig, shape_and_position=131).heatmap(array=u_mosaic, resize
                                                           xaxis_label_size=axsize,
                                                           yaxis_label_size=axsize,
                                                           )
+
+mplPlotter(fig=fig, ax=ax1).heatmap(array=u_empty, resize_axes=False, cmap=cmap_empty,
+                                    x_tick_number=x_ticks,
+                                    y_tick_number=y_ticks,
+                                    custom_x_ticklabels=(-20, 20) if plane == 'y=0' or plane == 'z=0' else (-15, 15),
+                                    custom_y_ticklabels=(-15, 15),
+                                    plot_title=None
+                                    )
 
 """
 v
@@ -530,6 +614,14 @@ ax2 = mplPlotter(fig=fig, shape_and_position=132).heatmap(array=v_mosaic, resize
                                                           yaxis_label_size=axsize,
                                                           )
 
+mplPlotter(fig=fig, ax=ax2).heatmap(array=v_empty, resize_axes=False, cmap=cmap_empty,
+                                    x_tick_number=x_ticks,
+                                    y_tick_number=0,
+                                    custom_x_ticklabels=(-20, 20) if plane == 'y=0' or plane == 'z=0' else (-15, 15),
+                                    custom_y_ticklabels=(-15, 15),
+                                    plot_title=None
+                                    )
+
 """
 w
 """
@@ -574,6 +666,14 @@ ax3 = mplPlotter(fig=fig, shape_and_position=133).heatmap(array=w_mosaic, resize
                                                           xaxis_label_size=axsize,
                                                           yaxis_label_size=axsize,
                                                           )
+
+mplPlotter(fig=fig, ax=ax3).heatmap(array=w_empty, resize_axes=False, cmap=cmap_empty,
+                                    x_tick_number=x_ticks,
+                                    y_tick_number=0,
+                                    custom_x_ticklabels=(-20, 20) if plane == 'y=0' or plane == 'z=0' else (-15, 15),
+                                    custom_y_ticklabels=(-15, 15),
+                                    plot_title=None
+                                    )
 
 """
 u shapes
@@ -644,6 +744,9 @@ if save is True:
     plt.savefig(os.path.join(img_path, '{}_Field_Subtraction_{}_vs_{}.png'.format(plane, ensemble_method, comp_field)),
                 dpi=150)
 
-max_min_avg_std()
+if metrics is True and comp_field == 'CFD':
+    cfd_metrics(plane=plane, comp=['u', 'v', 'w'], ensemble_method=ensemble_method, comparison_field=comp_field)
+elif metrics is True and comp_field == 'potential':
+    max_min_avg_std(u_mosaic, v_mosaic, w_mosaic)
 
 plt.show()
