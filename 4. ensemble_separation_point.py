@@ -326,7 +326,7 @@ def separation_point(method, field_u, field_w, save=False):
                                                                                          ylabel_rotation=90,
                                                                                          x_label=r'$\mathit{\theta}$' + ' $[deg]$',
                                                                                          yaxis_label_size=axis_lbsize,
-                                                                                         xaxis_label_size=axis_lbsize
+                                                                                         xaxis_label_size=axis_lbsize,
                                                                                          )
     ax1.axvline(x=real_theta_sep, ymin=-5, ymax=15, c='green', linewidth=line_thickness, label=r'$\mathit{\theta_{sep}}$' + r'$ = {}^\circ$'.format(np.round(real_theta_sep/np.pi*180, 2)))
     ax1.legend(loc=legendloc, fontsize=21)
